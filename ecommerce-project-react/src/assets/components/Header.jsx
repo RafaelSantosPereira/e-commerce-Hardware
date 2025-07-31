@@ -60,14 +60,14 @@ function Header() {
         <button onClick={toggleSidebar} className="text-gray-500 dark:text-gray-400">✕</button>
       </div>
         <nav className="p-4 space-y-4 text-foreground dark:text-[#cbd5e1]">
-          <Link to="/categoria/processadores" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Processadores</Link>
-          <Link to="/categoria/placas-graficas" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Placas Gráficas</Link>
-          <Link to="/categoria/motherboards" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Motherboards</Link>
-          <Link to="/categoria/memorias-ram" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Memórias RAM</Link>
-          <Link to="/categoria/armazenamento" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Armazenamento</Link>
-          <Link to="/categoria/fontes-de-alimentacao" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Fontes de Alimentação</Link>
-          <Link to="/categoria/caixas" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Caixas</Link>
-          <Link to="/categoria/coolers" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Coolers</Link>
+          <Link to="/processadores" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Processadores</Link>
+          <Link to="/placas-graficas" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Placas Gráficas</Link>
+          <Link to="/motherboards" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Motherboards</Link>
+          <Link to="/memorias-ram" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Memórias RAM</Link>
+          <Link to="/armazenamento" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Armazenamento</Link>
+          <Link to="/fontes-de-alimentacao" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Fontes de Alimentação</Link>
+          <Link to="/caixas" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Caixas</Link>
+          <Link to="/coolers" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Coolers</Link>
         </nav>
 
     </aside>
