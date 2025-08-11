@@ -20,29 +20,31 @@ function Header() {
   
   return (
     <>
-      <header className="flex items-center justify-between px-6 py-4 bg-white dark:bg-[#121212] border-b-2 border-slate-200 dark:border-gray-800 h-24">
+      <header className="flex items-center px-6 py-4 bg-white dark:bg-[#121212] border-b-2 border-slate-200 dark:border-gray-800 h-24">
         <button onClick={toggleSidebar} className="text-accent dark:text-accent">
-          <Menu className="w-7 h-7" />
+          <Menu className="w-7 h-7 text-blue-500" />
         </button>
 
-        <div className="text-2xl font-bold text-accent dark:text-accent">CompuStore</div>
+        <h1 className="text-3xl font-bold ml-8 text-blue-500 whitespace-nowrap">CompuStore</h1>
 
-        <form className="flex flex-1 max-w-md mx-6">
+        {/* Campo de pesquisa centrado */}
+        <form className="flex items-center flex-1 justify-center mx-auto max-w-xl px-4">
           <input
             type="text"
             placeholder="Pesquisar componentes..."
             className="flex-grow px-4 py-2 focus:outline-none text-foreground bg-gray-100 rounded-[10px] h-12
-      dark:bg-[#1f1f1f] dark:text-[#d1d5db] placeholder:text-muted dark:placeholder:text-gray-500"
+              dark:bg-[#1f1f1f] dark:text-[#d1d5db] placeholder:text-muted dark:placeholder:text-gray-500"
           />
           <button
             type="submit"
-            className="p-2 text-accent hover:text-white hover:bg-accent transition rounded-full"
+            className="p-2 ml-2 text-accent hover:text-white hover:bg-accent transition rounded-full"
           >
             <Search className="w-5 h-5" />
           </button>
         </form>
 
-        <div className="flex items-center gap-4 text-foreground dark:text-gray-200">
+        {/* Ícones encostados à direita */}
+        <div className="flex items-center gap-4 text-foreground dark:text-gray-200 ml-auto">
           <button><ShoppingCart className="w-7 h-7" /></button>
           <button><User className="w-7 h-7" /></button>
           <button onClick={toggleMode}>
@@ -50,6 +52,7 @@ function Header() {
           </button>
         </div>
       </header>
+
 
       <aside className={`fixed top-0 left-0 h-full w-64 bg-white dark:bg-[#1f1f1f] shadow-md transition-transform duration-300 z-40 ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'

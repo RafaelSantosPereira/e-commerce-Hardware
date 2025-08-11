@@ -1,4 +1,9 @@
 #root {
-  background-color: #F8FAFC; /* background claro */
+  background-color: #F8FAFC;
   width: 100%;
+}
+
+/* modo dark para #root */
+.dark #root {
+  background-color: #121212; /* ou outra cor escura que queiras */
 }
