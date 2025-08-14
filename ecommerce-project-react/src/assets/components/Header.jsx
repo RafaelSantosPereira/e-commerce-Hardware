@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { ShoppingCart, User, Sun, Moon, Menu } from 'lucide-react';
-import { Search } from 'lucide-react';
+import { ShoppingCart, User, Sun, Moon, Menu, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
 
 function Header() {
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const toggleMode = () => {
     setDarkMode(!darkMode);
@@ -17,17 +16,20 @@ function Header() {
     setSidebarOpen(!sidebarOpen);
   };
 
-  
+  const toggleUserMenu = () => {
+    setUserMenuOpen(!userMenuOpen);
+  };
+
   return (
     <>
-      <header className="flex items-center px-6 py-4 bg-white dark:bg-[#121212] border-b-2 border-slate-200 dark:border-gray-800 h-24">
+      <header className="flex items-center px-6 py-4 bg-white dark:bg-[#121212] border-b-2 border-slate-200 dark:border-gray-800 h-24 relative">
         <button onClick={toggleSidebar} className="text-accent dark:text-accent">
           <Menu className="w-7 h-7 text-blue-500" />
         </button>
 
         <h1 className="text-3xl font-bold ml-8 text-blue-500 whitespace-nowrap">CompuStore</h1>
 
-        {/* Campo de pesquisa centrado */}
+        {/* Pesquisa */}
         <form className="flex items-center flex-1 justify-center mx-auto max-w-xl px-4">
           <input
             type="text"
@@ -43,38 +45,66 @@ function Header() {
           </button>
         </form>
 
-        {/* Ícones encostados à direita */}
-        <div className="flex items-center gap-4 text-foreground dark:text-gray-200 ml-auto">
+        {/* Ícones */}
+        <div className="flex items-center gap-4 text-foreground dark:text-gray-200 ml-auto relative">
           <button><ShoppingCart className="w-7 h-7" /></button>
-          <button><User className="w-7 h-7" /></button>
+
+          {/* Botão de User */}
+          <div className="relative flex items-center">
+            <button onClick={toggleUserMenu}>
+              <User className="w-7 h-7" />
+            </button>
+
+            {/* Popup de login/conta */}
+            {userMenuOpen && (
+              <div className="absolute right-0 top-full mt-2 w-40 bg-white dark:bg-[#1f1f1f] border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                <Link
+                  to="/login"
+                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  onClick={() => setUserMenuOpen(false)}
+                >
+                  Fazer Login
+                </Link>
+                <Link
+                  to="/SignIn"
+                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  onClick={() => setUserMenuOpen(false)}
+                >
+                  Criar Conta
+                </Link>
+              </div>
+            )}
+          </div>
+
           <button onClick={toggleMode}>
             {darkMode ? <Sun className="w-7 h-7" /> : <Moon className="w-7 h-7" />}
           </button>
         </div>
       </header>
 
-
-      <aside className={`fixed top-0 left-0 h-full w-64 bg-white dark:bg-[#1f1f1f] shadow-md transition-transform duration-300 z-40 ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}
-    >
-      <div className="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
-        <h2 className="text-xl font-semibold text-foreground dark:text-[#d1d5db]">Categorias</h2>
-        <button onClick={toggleSidebar} className="text-gray-500 dark:text-gray-400">✕</button>
-      </div>
+      {/* Sidebar */}
+      <aside
+        className={`fixed top-0 left-0 h-full w-64 bg-white dark:bg-[#1f1f1f] shadow-md transition-transform duration-300 z-40 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
+          <h2 className="text-xl font-semibold text-foreground dark:text-[#d1d5db]">Categorias</h2>
+          <button onClick={toggleSidebar} className="text-gray-500 dark:text-gray-400">✕</button>
+        </div>
         <nav className="p-4 space-y-4 text-foreground dark:text-[#cbd5e1]">
-          <Link to="/processadores" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Processadores</Link>
-          <Link to="/placas-graficas" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Placas Gráficas</Link>
-          <Link to="/motherboards" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Motherboards</Link>
-          <Link to="/memorias-ram" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Memórias RAM</Link>
-          <Link to="/armazenamento" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Armazenamento</Link>
-          <Link to="/fontes-de-alimentacao" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Fontes de Alimentação</Link>
-          <Link to="/caixas" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Caixas</Link>
-          <Link to="/coolers" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors duration-200">Coolers</Link>
+          <Link to="/processadores" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors">Processadores</Link>
+          <Link to="/placas-graficas" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors">Placas Gráficas</Link>
+          <Link to="/motherboards" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors">Motherboards</Link>
+          <Link to="/memorias-ram" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors">Memórias RAM</Link>
+          <Link to="/armazenamento" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors">Armazenamento</Link>
+          <Link to="/fontes-de-alimentacao" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors">Fontes de Alimentação</Link>
+          <Link to="/caixas" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors">Caixas</Link>
+          <Link to="/coolers" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors">Coolers</Link>
         </nav>
+      </aside>
 
-    </aside>
-
+      {/* Fundo escuro da sidebar */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-30"
