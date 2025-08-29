@@ -3,9 +3,24 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const pool = require('./db');
+require('dotenv').config(); 
 
 const app = express();
 const PORT = 3000;
+
+const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
+
+
+// Transporter 
+const transporter = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: "rafael.ocyan@gmail.com", 
+    pass: "xeqe evfd eabz yuye"         
+  }
+});
+
 
 app.use(cors({
   origin: 'http://localhost:5173',
@@ -71,6 +86,23 @@ app.get('/products/:id/details', async (req, res) => {
   }
 });
 
+app.get('/products/search', async (req, res) => {
+  try {
+    const { searchQuery } = req.query; 
+
+    const result = await pool.query(
+      'SELECT * FROM product WHERE name ILIKE $1', 
+      [`%${searchQuery}%`] 
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro no servidor' });
+  }
+});
+
+
 
 
 // Criar conta e enviar token de verificação
@@ -103,10 +135,23 @@ app.post('/register', async (req, res) => {
       [userId, email, passwordHash, token, tokenExpiry]
     );
 
-    // Aqui enviarias o email de verificação (Nodemailer)
-    console.log(`Enviar email de verificação: http://localhost:3000/verify/${token}`);
+    // envio de email de comfirmaçao
+    const verifyUrl = `http://localhost:3000/verify/${token}`;
+    await transporter.sendMail({
+      from: '"CompuStore" <rafael.ocyan@gmail.com> ',
+      to: email,
+      subject: "Confirme o seu email",
+      html: `
+        <h2>Bem-vindo, ${name}!</h2>
+        <p>A CompuStore é um projeto criado para fins pessoais sem qualquer intuito malicioso ou lucrativo</p>
+        <p>Para ativar a sua conta, clique no link abaixo:</p>
+        <a href="${verifyUrl}">${verifyUrl}</a>
+        <p>Este link é válido por 24 horas.</p>
+      `
+    });
 
-    res.status(201).json({ message: 'Conta criada. Verifique o seu email.' });
+
+    res.status(201).json({ message: 'Verifique o seu email para confirmar a criaçao da conta.' });
   } catch (error) {
     console.error('Erro no registo:', error);
     res.status(500).send('Erro no registo');
@@ -132,7 +177,9 @@ app.get('/verify/:token', async (req, res) => {
       [token]
     );
 
-    res.send('Email verificado com sucesso. Já pode fazer login.');
+    res.redirect('http://localhost:5173/login');
+
+    
   } catch (error) {
     console.error('Erro na verificação:', error);
     res.status(500).send('Erro na verificação');
@@ -168,13 +215,31 @@ app.post('/login', async (req, res) => {
       'UPDATE user_auth SET last_login = NOW() WHERE id = $1',
       [user.id]
     );
-
-    res.json({ message: 'Login bem-sucedido', userId: user.user_id });
+     const token = jwt.sign(
+      { id: user.user_id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" } // token válido por 7 dias
+    );
+    res.json({ message: 'Login bem-sucedido', token});
   } catch (error) {
     console.error('Erro no login:', error);
     res.status(500).send('Erro no login');
   }
 });
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader?.split(" ")[1]; // "Bearer token ex: Bearer abcdef123456..."
+
+  if (!token) return res.status(401).json({ message: "Precisa estar logado" });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: "Token inválido ou expirado" });
+    req.user = user; 
+    next();
+  });
+}
+
 
 
 

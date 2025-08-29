@@ -72,28 +72,28 @@ function CategoryPage() {
 
 // Aplicar filtros
 useEffect(() => {
-  let temp = [...data];
+  let dataSort = [...data];
 
   if (selectedBrands.length > 0) {
-    temp = temp.filter(product => selectedBrands.includes(product.brand));
+    dataSort = dataSort.filter(product => selectedBrands.includes(product.brand));
   }
 
   // Filtro por preço
-  temp = temp.filter(product => 
+  dataSort = dataSort.filter(product => 
     product.price >= priceRange[0] && product.price <= priceRange[1]
   );
 
   if (sortOption === 'price-asc') {
-    temp.sort((a, b) => a.price - b.price);
+    dataSort.sort((a, b) => a.price - b.price);
   } else if (sortOption === 'price-desc') {
-    temp.sort((a, b) => b.price - a.price);
+    dataSort.sort((a, b) => b.price - a.price);
   } else if (sortOption === 'name-asc') {
-    temp.sort((a, b) => a.name.localeCompare(b.name));
+    dataSort.sort((a, b) => a.name.localeCompare(b.name));
   } else if (sortOption === 'name-desc') {
-    temp.sort((a, b) => b.name.localeCompare(a.name));
+    dataSort.sort((a, b) => b.name.localeCompare(a.name));
   }
 
-  setFilteredData(temp);
+  setFilteredData(dataSort);
 }, [data, selectedBrands, priceRange, sortOption]);
 
   const handleBrandToggle = (brand) => {
@@ -149,7 +149,7 @@ useEffect(() => {
           maxPrice={maxPrice}
         />
 
-        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6">
           {filteredData.map((product, index) => (
             <CardItem key={index} {...product} categoria={categoria} />
           ))}

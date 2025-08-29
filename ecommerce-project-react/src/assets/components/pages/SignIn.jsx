@@ -9,7 +9,7 @@ export default function SignIn() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = e => {
+  const handleSubmit =  async (e) => {
     e.preventDefault();
     if (password.length < 5) {
       setError('A password deve ter pelo menos 5 caracteres');
@@ -20,8 +20,31 @@ export default function SignIn() {
       return;
     }
     setError('');
-    console.log('Criar conta:', { email, password });
-    navigate('/login');
+    try {
+    const response = await fetch("http://localhost:3000/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: nome,
+        email,
+        password,
+        role: "customer"
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setError(data.message || "Erro no registo");
+    } else {
+      alert("Verifique o seu email para confirmar a criaçao da conta.");
+    }
+  } catch (err) {
+    console.error("Erro:", err);
+    setError("Erro no servidor.");
+  }
   };
 
   return (
@@ -30,29 +53,26 @@ export default function SignIn() {
         <h2 className="text-3xl font-bold text-blue-500 mb-6 text-center">Criar Conta</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <label className="block">
-            <span className="text-gray-700 dark:text-gray-300">Email</span>
             <input
               type="email"
               required
               value={email}
               onChange={e => setEmail(e.target.value)}
               className="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="exemplo@dominio.com"
+              placeholder="Email"
             />
           </label>
           <label className="block">
-            <span className="text-gray-700 dark:text-gray-300">Nome</span>
             <input
               type="text"
               required
               value={nome}
               onChange={e => setNome(e.target.value)}
               className="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="exemplo@dominio.com"
+              placeholder="Nome"
             />
           </label>
           <label className="block">
-            <span className="text-gray-700 dark:text-gray-300">Password</span>
             <input
               type="password"
               required
@@ -62,12 +82,11 @@ export default function SignIn() {
                 if (error) setError('');
               }}
               className="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder=""
+              placeholder="Password"
             />
           </label>
 
           <label className="block">
-            <span className="text-gray-700 dark:text-gray-300">Confirmar Password</span>
             <input
               type="password"
               required
@@ -77,7 +96,7 @@ export default function SignIn() {
                 if (error) setError('');
               }}
               className="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder=""
+              placeholder="Password"
             />
           </label>
 

@@ -7,17 +7,41 @@ export default function Login() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (password.length < 5) {
       setError('A senha deve ter pelo menos 5 caracteres');
       return;
     }
     setError('');
-    // Aqui vai a lógica real de login
-    console.log('Login:', { email, password });
-    // Exemplo: após login, redireciona para home
-    navigate('/');
+
+    try{
+      const response = await fetch('http://localhost:3000/login', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+
+        }),  
+      });
+
+      const result = await response.json();
+      if(!response.ok){
+        alert(result.message);
+      }
+      else{
+        localStorage.setItem("authToken", result.token);
+        alert('login bem sucedido')
+        navigate('/');
+      }
+    }
+    catch{
+      alert('erro ao eceder dados')
+    }
+   
   };
 
   return (
@@ -26,7 +50,6 @@ export default function Login() {
         <h2 className="text-3xl font-bold text-blue-500 mb-6 text-center">Fazer Login</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <label className="block">
-            <span className="text-gray-700 dark:text-gray-300">Email</span>
             <input
               type="email"
               required
@@ -36,12 +59,11 @@ export default function Login() {
                 if (error) setError('');
               }}
               className="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="exemplo@dominio.com"
+              placeholder="Email"
             />
           </label>
 
           <label className="block">
-            <span className="text-gray-700 dark:text-gray-300">Senha</span>
             <input
               type="password"
               required
@@ -51,7 +73,7 @@ export default function Login() {
                 if (error) setError('');
               }}
               className="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="••••••••"
+              placeholder="Password"
             />
           </label>
 

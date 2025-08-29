@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ShoppingCart, User, Sun, Moon, Menu, Search } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Header() {
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [isLogged, setUserState] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(""); // controla a pesquisa
+  const navigate = useNavigate();
 
   const toggleMode = () => {
     setDarkMode(!darkMode);
@@ -20,6 +23,26 @@ function Header() {
     setUserMenuOpen(!userMenuOpen);
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      setUserState(true);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    setUserState(false);
+    setUserMenuOpen(false);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim() !== "") {
+      navigate(`/Search?query=${encodeURIComponent(searchTerm.trim())}`);
+    }
+  };
+
   return (
     <>
       <header className="flex items-center px-6 py-4 bg-white dark:bg-[#121212] border-b-2 border-slate-200 dark:border-gray-800 h-24 relative">
@@ -27,12 +50,17 @@ function Header() {
           <Menu className="w-7 h-7 text-blue-500" />
         </button>
 
-        <h1 className="text-3xl font-bold ml-8 text-blue-500 whitespace-nowrap">CompuStore</h1>
+        <Link to="/"  className="text-3xl font-bold ml-8 text-blue-500 whitespace-nowrap">CompuStore</Link>
 
         {/* Pesquisa */}
-        <form className="flex items-center flex-1 justify-center mx-auto max-w-xl px-4">
+        <form 
+          onSubmit={handleSearchSubmit}
+          className="flex items-center flex-1 justify-center mx-auto max-w-xl px-4"
+        >
           <input
             type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Pesquisar componentes..."
             className="flex-grow px-4 py-2 focus:outline-none text-foreground bg-gray-100 rounded-[10px] h-12
               dark:bg-[#1f1f1f] dark:text-[#d1d5db] placeholder:text-muted dark:placeholder:text-gray-500"
@@ -58,20 +86,42 @@ function Header() {
             {/* Popup de login/conta */}
             {userMenuOpen && (
               <div className="absolute right-0 top-full mt-2 w-40 bg-white dark:bg-[#1f1f1f] border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
-                <Link
-                  to="/login"
-                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  onClick={() => setUserMenuOpen(false)}
-                >
-                  Fazer Login
-                </Link>
-                <Link
-                  to="/SignIn"
-                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  onClick={() => setUserMenuOpen(false)}
-                >
-                  Criar Conta
-                </Link>
+                
+                {!isLogged ? (
+                  <>
+                    <Link
+                      to="/login"
+                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      Fazer Login
+                    </Link>
+                    <Link
+                      to="/SignIn"
+                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      Criar Conta
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      Perfil
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    >
+                      Logout
+                    </button>
+                  </>
+                )}
+
               </div>
             )}
           </div>
