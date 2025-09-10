@@ -1,21 +1,35 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { useCart } from '../CartContext';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { login } = useAuth();
+  const { fetchCart } = useCart();
   const navigate = useNavigate();
+
+
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("verified") === "success") {
+      alert("Conta verificada com sucesso!");
+    }
+  }, [location]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password.length < 5) {
-      setError('A senha deve ter pelo menos 5 caracteres');
+      setError('A password deve ter pelo menos 5 caracteres');
       return;
     }
     setError('');
 
-    try{
+    try {
       const response = await fetch('http://localhost:3000/login', {
         method: "POST",
         headers: {
@@ -24,24 +38,60 @@ export default function Login() {
         body: JSON.stringify({
           email,
           password,
-
         }),  
       });
 
       const result = await response.json();
-      if(!response.ok){
+      if (!response.ok) {
         alert(result.message);
+        return;
       }
-      else{
-        localStorage.setItem("authToken", result.token);
-        alert('login bem sucedido')
-        navigate('/');
+
+      
+      login(result.token, result.name, result.role);
+
+      //Fazer merge do carrinho local
+      const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
+      if (localCart.length > 0) {
+        try {
+          // Converter estrutura do carrinho local para o formato esperado pelo backend
+          const itemsToMerge = localCart.map(item => ({
+            productId: item.id,  // Mudança aqui: id -> productId
+            quantity: item.quantity
+          }));
+
+          const mergeResponse = await fetch("http://localhost:3000/cart/merge", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${result.token}`
+            },
+            body: JSON.stringify({ items: itemsToMerge })
+          });
+
+          if (mergeResponse.ok) {
+            // Limpar carrinho local apenas se o merge foi bem-sucedido
+            localStorage.removeItem("cart");
+            console.log("Carrinho local merged com sucesso!");
+          } else {
+            console.error("Erro no merge do carrinho");
+          }
+        } catch (mergeError) {
+          console.error("Erro ao fazer merge do carrinho:", mergeError);
+        }
       }
+
+      // Atualizar o carrinho após o merge
+      await fetchCart();
+
+
+      alert('Login bem sucedido');
+      navigate('/');
+
+    } catch (error) {
+      console.error('Erro ao fazer login:', error);
+      alert('Erro ao aceder dados');
     }
-    catch{
-      alert('erro ao eceder dados')
-    }
-   
   };
 
   return (

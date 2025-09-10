@@ -8,25 +8,33 @@ import SignIn from './assets/components/pages/SignIn';
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Search from './assets/components/pages/search';
+import { AuthProvider } from './assets/components/contexts/AuthContext';
+import { CartProvider } from './assets/components/CartContext';
+
 function App() {
   
   return (
-    <Router>
-      <div className="flex flex-col h-screen">
-        <Header />
-        <main className="flex-1 overflow-auto">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/:categoria" element={<CategoryPage />} />
-            <Route path="/:categoria/:id" element={<Detail />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/SignIn" element={<SignIn />} />
-            <Route path="/Search" element={<Search />} />
+    <AuthProvider>
+      <CartProvider>
+        <Router>
+          <div className="flex flex-col h-screen">
+            <Header />
+            <main className="flex-1 overflow-auto">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/:categoria" element={<CategoryPage />} />
+                <Route path="/:categoria/:id" element={<Detail />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/SignIn" element={<SignIn />} />
+                <Route path="/Search" element={<Search />} />
 
-          </Routes>
-        </main>
-      </div>
-    </Router>
+              </Routes>
+            </main>
+          </div>
+        </Router>
+      </CartProvider>
+    </AuthProvider>
+    
   );
 
   

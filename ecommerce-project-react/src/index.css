@@ -66,3 +66,34 @@
     @apply bg-background text-foreground;
   }
 }
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: rgba(0,0,0,0.05);
+  border-radius: 5px;
+}
+
+/* Scrollbar para modo escuro */
+.dark ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: #4b5563; /* cinza escuro */
+  border-radius: 5px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background-color: #1f1f1f; /* fundo do modo escuro */
+  border-radius: 5px;
+}

@@ -35,7 +35,7 @@ function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background dark:bg-darkBackground text-foreground dark:text-darkForeground">
+    <div className="min-h-screen bg-background dark:bg-darkBackground text-foreground dark:text-darkForeground p-4">
       <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {data.map((product, index) => (
           <CardItem

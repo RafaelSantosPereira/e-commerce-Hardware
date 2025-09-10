@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
   service: "Gmail",
   auth: {
     user: "rafael.ocyan@gmail.com", 
-    pass: "xeqe evfd eabz yuye"         
+    pass: process.env.GM_PASS,         
   }
 });
 
@@ -177,7 +177,7 @@ app.get('/verify/:token', async (req, res) => {
       [token]
     );
 
-    res.redirect('http://localhost:5173/login');
+    res.redirect('http://localhost:5173/login?verified=success');
 
     
   } catch (error) {
@@ -192,9 +192,13 @@ app.post('/login', async (req, res) => {
 
   try {
     const result = await pool.query(
-      'SELECT * FROM user_auth WHERE email = $1',
+      `SELECT ua.*, u.role, u.name 
+      FROM user_auth ua 
+      JOIN users u ON ua.user_id = u.id 
+      WHERE ua.email = $1`,
       [email]
     );
+
 
     if (result.rows.length === 0) {
       return res.status(400).json({ message: 'Email ou password incorretos' });
@@ -220,7 +224,7 @@ app.post('/login', async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "7d" } // token válido por 7 dias
     );
-    res.json({ message: 'Login bem-sucedido', token});
+    res.json({ message: 'Login bem-sucedido', token, name: user.name, role: user.role });
   } catch (error) {
     console.error('Erro no login:', error);
     res.status(500).send('Erro no login');
@@ -240,7 +244,111 @@ function authenticateToken(req, res, next) {
   });
 }
 
+app.post("/cart", authenticateToken, async (req, res) => {
+  const { productId, quantity } = req.body;
+  const userId = req.user.id;
 
+  // Verifica se o item já existe no carrinho
+  const existing = await pool.query(
+    "SELECT * FROM cart_items WHERE user_id = $1 AND product_id = $2",
+    [userId, productId]
+  );
+
+  if (existing.rows.length) {
+    await pool.query(
+      "UPDATE cart_items SET quantity = quantity + $1 WHERE user_id = $2 AND product_id = $3",
+      [quantity, userId, productId]
+    );
+  } else {
+    await pool.query(
+      "INSERT INTO cart_items(user_id, product_id, quantity) VALUES($1, $2, $3)",
+      [userId, productId, quantity]
+    );
+  }
+
+  res.sendStatus(200);
+});
+
+app.get("/getcart", authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    const result = await pool.query(
+      `SELECT ci.id, ci.product_id, ci.quantity, 
+              p.name, p.price, p.image_url, p.category_id
+      FROM cart_items ci
+      JOIN product p ON ci.product_id = p.id
+      WHERE ci.user_id = $1`,
+      [userId]
+    );
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Erro ao buscar carrinho:", error);
+    res.status(500).json({ message: "Erro ao buscar carrinho" });
+  }
+});
+
+app.post('/getItems', async (req, res) => {
+  const { ids } = req.body; // array de ids
+
+  if (!ids || ids.length === 0) {
+    return res.json([]);
+  }
+
+  try {
+    const result = await pool.query(
+      'SELECT * FROM product WHERE id = ANY($1::int[])',
+      [ids]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Erro ao buscar produtos' });
+  }
+});
+
+// Merge
+app.post("/cart/merge", authenticateToken, async (req, res) => {
+  const { items } = req.body;
+  const userId = req.user.id;
+
+  for (let item of items) {
+    const existing = await pool.query(
+      "SELECT * FROM cart_items WHERE user_id = $1 AND product_id = $2",
+      [userId, item.productId]
+    );
+
+    if (existing.rows.length) {
+      await pool.query(
+        "UPDATE cart_items SET quantity = quantity + $1 WHERE user_id = $2 AND product_id = $3",
+        [item.quantity, userId, item.productId]
+      );
+    } else {
+      await pool.query(
+        "INSERT INTO cart_items(user_id, product_id, quantity) VALUES($1, $2, $3)",
+        [userId, item.productId, item.quantity]
+      );
+    }
+  }
+
+  res.sendStatus(200);
+});
+app.delete("/cart/:itemId", authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+  const { itemId } = req.params;
+
+  try {
+    await pool.query(
+      "DELETE FROM cart_items WHERE user_id = $1 AND product_id = $2",
+      [userId, itemId]
+    );
+    res.sendStatus(200);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Erro ao remover item do carrinho" });
+  }
+});
 
 
 
