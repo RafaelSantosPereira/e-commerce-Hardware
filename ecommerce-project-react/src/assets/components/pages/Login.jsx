@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useCart } from '../CartContext';
+import { useCart } from '../contexts/CartContext';
 
 export default function Login() {
   const [email, setEmail] = useState('');

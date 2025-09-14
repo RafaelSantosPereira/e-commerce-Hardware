@@ -3,7 +3,7 @@ import { ShoppingCart, User, Sun, Moon, Menu, Search } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import MiniCardItem from './MiniCardItem';
 import { idParaCategoria } from '../export_files/idParaCategoria';
-import { useCart } from './CartContext';
+import { useCart } from './contexts/CartContext';
 import { useAuth } from './contexts/AuthContext';
 
 

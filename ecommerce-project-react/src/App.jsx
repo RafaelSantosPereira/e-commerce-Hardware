@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Search from './assets/components/pages/search';
 import { AuthProvider } from './assets/components/contexts/AuthContext';
-import { CartProvider } from './assets/components/CartContext';
+import { CartProvider } from './assets/components/contexts/CartContext';
 
 function App() {
   
