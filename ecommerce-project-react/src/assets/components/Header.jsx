@@ -65,25 +65,27 @@ function Header() {
         </Link>
 
         {/* Pesquisa */}
-        <form 
-          onSubmit={handleSearchSubmit}
-          className="flex items-center flex-1 justify-center mx-auto max-w-xl px-4"
-        >
+        <form
+        onSubmit={handleSearchSubmit}
+        className="flex items-center flex-1 justify-center mx-auto max-w-xl px-4"
+      >
+        <div className="relative flex-grow">
+          {/* Ícone dentro do input */}
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+            <Search className="w-5 h-5" />
+          </span>
+
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Pesquisar componentes..."
-            className="flex-grow px-4 py-2 focus:outline-none text-foreground bg-gray-100 rounded-[10px] h-12
-              dark:bg-[#1f1f1f] dark:text-[#d1d5db] placeholder:text-muted dark:placeholder:text-gray-500"
+            className="w-full pl-10 pr-4 py-2 focus:outline-none text-foreground bg-gray-100 rounded-[10px] h-12
+              dark:bg-[#1f1f1f] dark:text-[#d1d5db] placeholder:text-slate-500"
           />
-          <button
-            type="submit"
-            className="p-2 ml-2 text-accent hover:text-white hover:bg-accent transition rounded-full"
-          >
-            <Search className="w-5 h-5" />
-          </button>
-        </form>
+        </div>
+
+      </form>
 
         {/* Ícones */}
         <div className="flex items-center gap-4 text-foreground dark:text-gray-200 ml-auto relative">
@@ -157,7 +159,7 @@ function Header() {
         }`}
       >
         <div className="p-6 bg-blue-500 dark:border-gray-800 flex justify-between items-center border-0 rounded-tr-lg">
-          <h2 className="text-xl font-semibold text-foreground text-[#d1d5db]">Categorias</h2>
+          <h2 className="text-xl font-semibold text-foreground text-slate-100">Categorias</h2>
           <button onClick={toggleSidebar} className="text-white">✕</button>
         </div>
         <nav className="p-4 space-y-4 text-foreground dark:text-[#cbd5e1]">
@@ -203,13 +205,13 @@ function Header() {
         <div className="flex-1 overflow-y-auto">
           {cartLoading ? (
             <div className="flex items-center justify-center p-8">
-              <div className="text-gray-500 dark:text-gray-400">Carregando carrinho...</div>
+              <div className="text-gray-500 dark:text-gray-400">A carregar carrinho...</div>
             </div>
           ) : cartItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-8 text-center">
               <ShoppingCart className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" />
-              <p className="text-gray-500 dark:text-gray-400 mb-2">Seu carrinho está vazio</p>
-              <p className="text-sm text-gray-400 dark:text-gray-500">Adicione produtos para começar suas compras</p>
+              <p className="text-gray-500 dark:text-gray-400 mb-2">O carrinho está vazio</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500">Adicione produtos para começar as suas compras</p>
             </div>
           ) : (
             <>

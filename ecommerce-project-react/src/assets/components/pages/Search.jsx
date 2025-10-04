@@ -44,11 +44,7 @@ export default function Search() {
         setData(json);
         setLoading(false);
       })
-      .catch(err => {
-        console.error("Erro ao buscar produtos:", err);
-        setError(err.message);
-        setLoading(false);
-      });
+      
   }, [query]);
 
   // Função para renderizar o conteúdo baseado no estado

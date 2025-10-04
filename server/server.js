@@ -36,7 +36,6 @@ app.get('/products', async (req, res) => {
     res.json(result.rows);
   } catch (error) {
     console.error('Erro na query:', error);
-    res.status(500).send('Erro ao buscar produtos');
   }
 });
 
