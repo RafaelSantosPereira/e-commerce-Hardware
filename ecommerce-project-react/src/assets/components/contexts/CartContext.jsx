@@ -9,10 +9,11 @@ export function useCart() {
 export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
   const [cartLoading, setCartLoading] = useState(false);
+  const token = localStorage.getItem("authToken");
 
   // Função para buscar carrinho do backend
   const fetchCart = async () => {
-    const token = localStorage.getItem("authToken");
+    
 
     if (token) {
       // Se está logado → busca do backend
@@ -71,8 +72,7 @@ export function CartProvider({ children }) {
   }, []);
 
   const addToCart = async (productId, quantity) => {
-    const token = localStorage.getItem("authToken");
-
+    
     if (token) {
       try {
         const res = await fetch("http://localhost:3000/cart", {
@@ -99,15 +99,14 @@ export function CartProvider({ children }) {
       localStorage.setItem("cart", JSON.stringify(localCart));
       setCartItems(localCart);
     }
-    await fetchCart(); // Atualiza o estado do carrinho
+    await fetchCart(); 
 
   };
 
   const deleteItem = async (productId) => {
-    const token = localStorage.getItem("authToken");
 
     if (token) {
-      // Usuário logado → remove no backend
+      // Utilizador logado → remove no backend
       try {
         const res = await fetch(`http://localhost:3000/cart/${productId}`, {
           method: "DELETE",
@@ -119,7 +118,7 @@ export function CartProvider({ children }) {
         console.error(err);
       }
     } else {
-      // Usuário não logado → remove do localStorage
+      // Utilizador não logado → remove do localStorage
       const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
       const updatedCart = localCart.filter(item => item.id !== productId);
       localStorage.setItem("cart", JSON.stringify(updatedCart));
@@ -128,6 +127,28 @@ export function CartProvider({ children }) {
     await fetchCart();
   };
 
+  const deleteCart = async () => {
+
+    if (token) {
+      
+      try {
+        const res = await fetch(`http://localhost:3000/cart`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Erro ao remover item do carrinho");
+        
+      } catch (err) {
+        console.error(err);
+      }
+    } 
+
+
+    setCartItems([]);
+    localStorage.removeItem("cart");
+    await fetchCart();
+  }
+    
 
   const clearCart = () => {
     setCartItems([]);
@@ -139,7 +160,7 @@ export function CartProvider({ children }) {
 
   return (
     <CartContext.Provider
-      value={{ cartItems, addToCart, clearCart, fetchCart, deleteItem, totalItems, totalPrice, cartLoading }}
+      value={{ cartItems, addToCart, clearCart, fetchCart, deleteItem, deleteCart, totalItems, totalPrice, cartLoading }}
     >
       {children}
     </CartContext.Provider>

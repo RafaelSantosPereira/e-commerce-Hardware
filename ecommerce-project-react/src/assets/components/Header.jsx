@@ -18,6 +18,7 @@ function Header() {
   const navigate = useNavigate();
 
 
+  
   const toggleMode = () => {
     setDarkMode(!darkMode);
     document.documentElement.classList.toggle('dark');
@@ -145,6 +146,7 @@ function Header() {
               </div>
             )}
           </div>
+              
 
           <button onClick={toggleMode}>
             {darkMode ? <Sun className="w-7 h-7" /> : <Moon className="w-7 h-7" />}
@@ -237,13 +239,19 @@ function Header() {
               <span className="text-lg font-semibold dark:text-gray-200">Total:</span>
               <span className="text-xl font-bold text-blue-500">€{totalCartPrice.toFixed(2)}</span>
             </div>
-            <Link
-              to="/carrinho"
+            <button
+              onClick={() => {
+                if (!isLogged) {
+                  alert("Por favor, faça login para finalizar a compra.");
+                  return;
+                }
+                handleCartToggle(); 
+                navigate("/carrinho"); 
+              }}
               className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors text-center block"
-              onClick={handleCartToggle}
             >
-              Finalisar Compra
-            </Link>
+              Finalizar Compra
+            </button>
           </div>
         )}
       </aside>

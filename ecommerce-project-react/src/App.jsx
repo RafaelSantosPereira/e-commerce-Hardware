@@ -11,6 +11,7 @@
   import { AuthProvider } from './assets/components/contexts/AuthContext';
   import { CartProvider } from './assets/components/contexts/CartContext';
   import Cart from './assets/components/pages/Cart';
+  import Profile from './assets/components/pages/Profile';
 
   function App() {
     
@@ -29,7 +30,7 @@
                   <Route path="/login" element={<Login />} />
                   <Route path="/SignIn" element={<SignIn />} />
                   <Route path="/Search" element={<Search />} />
-                  
+                  <Route path="/profile" element={<Profile />} />
 
                 </Routes>
               </main>

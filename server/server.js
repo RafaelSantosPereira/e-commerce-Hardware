@@ -348,6 +348,94 @@ app.delete("/cart/:itemId", authenticateToken, async (req, res) => {
     res.status(500).json({ message: "Erro ao remover item do carrinho" });
   }
 });
+app.delete("/cart", authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    await pool.query(
+      "DELETE FROM cart_items WHERE user_id = $1",
+      [userId]
+    );
+    res.sendStatus(200);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Erro ao remover item do carrinho" });
+  }
+});
+
+app.post('/order', authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+  const { address, totalPrice, receiver_name, items } = req.body;
+
+
+  try {
+    await pool.query('BEGIN');
+
+    // Inserir a order principal
+    const orderResult = await pool.query(
+      `INSERT INTO orders (user_id, address, receiver_name, total_price)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id`,
+      [userId, address, receiver_name, totalPrice]
+    );
+
+    const orderId = orderResult.rows[0].id;
+
+    // Inserir todos os produtos dessa order
+    const insertItemQuery = `
+      INSERT INTO order_items (order_id, product_id, quantity, unit_price)
+      VALUES ($1, $2, $3, $4)
+    `;
+
+    for (const item of items) {
+      const { product_id, quantity, price } = item;
+      await pool.query(insertItemQuery, [orderId, product_id, quantity, price]);
+    }
+
+    await pool.query('COMMIT');// se as 2 queries correrem bem faz commit na base de dados
+    res.status(201).json({ message: 'Compra finalizada com sucesso!', orderId });
+    
+  } catch (err) {
+    await pool.query('ROLLBACK');// se houver algum erro faz rollback
+    console.error('Erro ao inserir pedido:', err);
+    res.status(500).json({ error: 'Erro ao criar pedido.' });
+  }
+});
+
+app.get('/orders', authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const result = await pool.query(
+      `SELECT
+        o.id,
+        o.address,
+        o.receiver_name,
+        o.total_price,
+        o.created_at,
+        JSON_AGG(
+          JSON_BUILD_OBJECT(
+            'id', p.id,
+            'name', p.name,
+            'image_url', p.image_url,
+            'price', oi.unit_price,
+            'quantity', oi.quantity
+          )
+        ) AS produtos
+       FROM orders o
+       JOIN order_items oi ON o.id = oi.order_id
+       JOIN product p ON oi.product_id = p.id
+       WHERE o.user_id = $1
+       GROUP BY o.id
+       ORDER BY o.created_at DESC`,
+      [userId]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Erro ao buscar pedidos' });
+  }
+})
 
 
 
