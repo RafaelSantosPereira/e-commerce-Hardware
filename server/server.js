@@ -367,7 +367,6 @@ app.post('/order', authenticateToken, async (req, res) => {
   const userId = req.user.id;
   const { address, totalPrice, receiver_name, items } = req.body;
 
-
   try {
     await pool.query('BEGIN');
 
