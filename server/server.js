@@ -3,31 +3,40 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const pool = require('./db');
-require('dotenv').config(); 
-
-const app = express();
-const PORT = 3000;
-
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
+require('dotenv').config();
 
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Transporter 
-const transporter = nodemailer.createTransport({
-  service: "Gmail",
-  auth: {
-    user: "rafael.ocyan@gmail.com", 
-    pass: process.env.GM_PASS,         
-  }
-});
+// Detectar ambiente
+const isProduction = process.env.NODE_ENV === 'production';
 
-
+// Configurar CORS dinamicamente
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: isProduction 
+    ? process.env.FRONTEND_URL   // exemplo: https://teu-front.vercel.app
+    : 'http://localhost:5173',   // ambiente local
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 }));
+
 app.use(express.json());
+
+// Nodemailer
+const transporter = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: "rafael.ocyan@gmail.com",
+    pass: process.env.GM_PASS,
+  },
+});
+
+// Teste de rota
+app.get('/', (req, res) => {
+  res.send(`API online em modo ${isProduction ? 'Produção' : 'Desenvolvimento'} 🚀`);
+});
 
 //
 app.get('/products', async (req, res) => {
