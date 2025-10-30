@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import Header from '../../Header';
 import CardItem from '../../CardItem';
+import { useScrollRestore } from '../../useScrollRestore';
 
-function Home() {
+function Home({ mainRef }) {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true); // opcional
+  const [loading, setLoading] = useState(true);
 
   const idParaCategoria = {
     1: 'processadores',
@@ -30,16 +30,23 @@ function Home() {
       });
   }, []);
 
+  // Hook para restaurar posição
+  const isRestoring = useScrollRestore(mainRef, "homeScrollPosition", !loading && data.length > 0);
+
   if (loading) {
-    return <p className="text-center">Carregando produtos...</p>;
+    return <p className="text-center mt-8">Carregando produtos...</p>;
   }
 
   return (
-    <div className="min-h-screen bg-background dark:bg-darkBackground text-foreground dark:text-darkForeground p-4">
-      <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+    <div
+      className={`min-h-screen bg-background dark:bg-darkBackground text-foreground dark:text-darkForeground p-4 ${
+        isRestoring ? 'opacity-0' : 'opacity-100'
+      }`}
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {data.map((product, index) => (
           <CardItem
-            key={index}
+            key={product.id || index}
             {...product}
             categoria={idParaCategoria[product.category_id]}
           />

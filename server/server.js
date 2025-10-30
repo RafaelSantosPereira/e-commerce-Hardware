@@ -415,6 +415,7 @@ app.get('/orders', authenticateToken, async (req, res) => {
           JSON_BUILD_OBJECT(
             'id', p.id,
             'name', p.name,
+            'category_id', p.category_id,
             'image_url', p.image_url,
             'price', oi.unit_price,
             'quantity', oi.quantity

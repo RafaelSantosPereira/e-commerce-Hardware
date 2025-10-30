@@ -8,7 +8,7 @@ import { useAuth } from './contexts/AuthContext';
 
 
 function Header() {
-  const [darkMode, setDarkMode] = useState(false);
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -18,10 +18,22 @@ function Header() {
   const navigate = useNavigate();
 
 
-  
+ const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem('theme') === 'dark';
+  });
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [darkMode]); // corre sempre que darkMode muda
+
   const toggleMode = () => {
-    setDarkMode(!darkMode);
-    document.documentElement.classList.toggle('dark');
+    setDarkMode(prev => !prev); 
   };
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);

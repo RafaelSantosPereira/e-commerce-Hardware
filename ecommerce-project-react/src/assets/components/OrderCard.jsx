@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import MiniCardItem from "./MiniCardItem";
+import { idParaCategoria } from "../export_files/idParaCategoria";
 
 function OrderCard({ id, address, receiver_name, total_price, created_at, produtos = [] }) {
   const [isOpen, setIsOpen] = useState(true);
@@ -56,10 +57,12 @@ function OrderCard({ id, address, receiver_name, total_price, created_at, produt
           {produtos.map((item) => (
             <MiniCardItem
               key={`${id}-${item.id}`}
+              id={item.id}
               name={item.name}
               price={item.price}
               image_url={item.image_url}
               quantity={item.quantity}
+              categoria={idParaCategoria[item.category_id]}
               readOnly
             />
           ))}
@@ -72,18 +75,7 @@ function OrderCard({ id, address, receiver_name, total_price, created_at, produt
         </p>
       )}
 
-      {/* Botões de ação */}
-      <div className="mt-5 flex justify-end gap-3">
-        <Link
-          to="#"
-          className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
-        >
-          Ver detalhes
-        </Link>
-        <button className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors">
-          Repetir pedido
-        </button>
-      </div>
+
     </div>
   );
 }

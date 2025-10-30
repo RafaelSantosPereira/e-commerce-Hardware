@@ -3,6 +3,7 @@ import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import CardItem from '../CardItem';
 import FilterSidebar from '../FilterSidebar';
+import { useScrollRestore } from '../useScrollRestore';
 import {
   Select,
   SelectContent,
@@ -24,7 +25,7 @@ const categoriaParaId = {
 
 // IMPORTS MANTIDOS...
 
-function CategoryPage() {
+function CategoryPage({ mainRef }) {
   const { categoria } = useParams();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -116,11 +117,20 @@ useEffect(() => {
 
   const handlePriceChange = (range) => setPriceRange(range);
 
+  const isRestoring = useScrollRestore(
+  mainRef,
+  `categoryScroll-${categoria}`, // chave única por categoria
+  !loading && data.length > 0      // habilita quando os dados carregam
+);
+
   if (loading) return <div>Carregando...</div>;
   if (!data.length) return <div>Categoria não encontrada.</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-darkBackground text-foreground dark:text-darkForeground p-6">
+      <div
+      className={`min-h-screen bg-background dark:bg-darkBackground text-foreground dark:text-darkForeground p-4 
+      ${isRestoring ? 'opacity-0' : 'opacity-100'}`}
+    >
       <div className='flex flex-row m-5'>
         <h1 className="text-4xl font-bold capitalize mb-4">{categoria.replace('-', ' ')}</h1>
         <div className='ml-auto flex bg-white dark:bg-[#1f1f1f] border rounded-lg shadow p-4'>

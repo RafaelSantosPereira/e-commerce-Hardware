@@ -21,7 +21,7 @@ function FilterSidebar({
   }, [priceRange]);
 
   return (
-    <div className="w-52 mr-5 p-5 bg-white dark:bg-[#1f1f1f] border rounded-lg shadow">
+    <div className="w-52 mr-5 p-5 bg-white dark:bg-[#1f1f1f] border rounded-lg shadow max-h-fit">
       <h2 className="text-xl font-semibold mb-4">Filtros</h2>
 
       <div className="mb-4">

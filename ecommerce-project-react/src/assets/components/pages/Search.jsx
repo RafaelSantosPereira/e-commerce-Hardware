@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { idParaCategoria } from "@/assets/export_files/idParaCategoria";
 import CardItem from '../CardItem';
+import { useScrollRestore } from "../useScrollRestore";
 
 // Componente de layout reutilizável
 const SearchLayout = ({ children }) => (
@@ -17,7 +18,7 @@ const CenteredMessage = ({ children, className = "" }) => (
   </div>
 );
 
-export default function Search() {
+export default function Search({ mainRef }) {
   const { search } = useLocation();
   const query = new URLSearchParams(search).get("query"); 
   const [data, setData] = useState([]);
@@ -47,6 +48,9 @@ export default function Search() {
       
   }, [query]);
 
+
+  const isRestoring = useScrollRestore(mainRef, "SearchScrollPosition", !loading && data.length > 0);
+  
   // Função para renderizar o conteúdo baseado no estado
   const renderContent = () => {
     
@@ -75,7 +79,10 @@ export default function Search() {
           </p>
         </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6
+           ${isRestoring ? 'opacity-0' : 'opacity-100'
+  }`}>
+
             {data.map((product) => (
               <CardItem
                 key={product.id}
