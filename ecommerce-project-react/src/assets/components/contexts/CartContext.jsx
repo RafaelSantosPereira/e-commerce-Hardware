@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-
+import { useAuth } from "./AuthContext";
 const CartContext = createContext();
 const apiUrl = import.meta.env.VITE_API_URL
 
@@ -11,7 +11,7 @@ export function useCart() {
 export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
   const [cartLoading, setCartLoading] = useState(false);
-  const token = localStorage.getItem("authToken");
+  const { token } = useAuth();
 
   // Função para buscar carrinho do backend
   const fetchCart = async () => {
@@ -71,7 +71,7 @@ export function CartProvider({ children }) {
 
   useEffect(() => {
     fetchCart();
-  }, []);
+  }, [token]);
 
   const addToCart = async (productId, quantity) => {
     

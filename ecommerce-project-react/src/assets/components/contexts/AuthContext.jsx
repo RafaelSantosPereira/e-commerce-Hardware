@@ -1,65 +1,56 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import {jwtDecode} from "jwt-decode";
-
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isLogged, setIsLogged] = useState(false);
-  const [userName, setUserName] = useState(null);
-  const [userRole, setUserRole] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("authToken"));
+  const [isLogged, setIsLogged] = useState(!!token);
+  const [userName, setUserName] = useState(localStorage.getItem("userName"));
+  const [userRole, setUserRole] = useState(localStorage.getItem("userRole"));
 
- useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    const name = localStorage.getItem("userName");
-    const role = localStorage.getItem("userRole");
-
+  useEffect(() => {
     if (token) {
       try {
         const decoded = jwtDecode(token);
 
         // verifica se o token expirou
-        const currentTime = Date.now() / 1000; // em segundos
+        const currentTime = Date.now() / 1000; // segundos
         if (decoded.exp < currentTime) {
-          // token expirado
-          localStorage.removeItem("authToken");
-          localStorage.removeItem("userName");
-          localStorage.removeItem("userRole");
-          setIsLogged(false);
-          setUserName(null);
-          setUserRole(null);
+          logout(); // token expirado
         } else {
           setIsLogged(true);
-          setUserName(name);
-          setUserRole(role);
         }
       } catch (err) {
-        // token inválido
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("userName");
-        localStorage.removeItem("userRole");
+        logout(); // token inválido
       }
+    } else {
+      setIsLogged(false);
     }
-  }, []);
+  }, [token]); // <-- reexecuta quando o token muda
 
-  const login = (token, name) => {
-    localStorage.setItem("authToken", token);
+  const login = (newToken, name, role) => {
+    localStorage.setItem("authToken", newToken);
     localStorage.setItem("userName", name);
-    localStorage.setItem("userRole", name);
-    setIsLogged(true);
+    localStorage.setItem("userRole", role);
+    setToken(newToken);
     setUserName(name);
+    setUserRole(role);
+    setIsLogged(true);
   };
 
   const logout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userName");
     localStorage.removeItem("userRole");
+    setToken(null);
     setIsLogged(false);
     setUserName(null);
+    setUserRole(null);
   };
 
   return (
-    <AuthContext.Provider value={{ isLogged, userName, userRole, login, logout }}>
+    <AuthContext.Provider value={{ token, isLogged, userName, userRole, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
