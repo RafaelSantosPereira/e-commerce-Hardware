@@ -3,7 +3,7 @@ import MiniCardItem from "../MiniCardItem";
 import { idParaCategoria } from "@/assets/export_files/idParaCategoria";
 import { useAuth } from "../contexts/AuthContext";
 import {useState} from "react";
-
+const apiUrl = import.meta.env.VITE_API_URL
 
 function Cart() {
   const { cartItems, totalPrice, clearCart, deleteCart } = useCart();
@@ -28,7 +28,7 @@ function Cart() {
 
         console.log("Items for Order:", itemsForOrder);
 
-        const response = await fetch('http://localhost:3000/order', {
+        const response = await fetch(`${apiUrl}/order`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
