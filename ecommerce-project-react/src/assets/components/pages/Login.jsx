@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
+const apiUrl = import.meta.env.VITE_API_URL
+
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -30,7 +32,7 @@ export default function Login() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3000/login', {
+      const response = await fetch(`${apiUrl}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

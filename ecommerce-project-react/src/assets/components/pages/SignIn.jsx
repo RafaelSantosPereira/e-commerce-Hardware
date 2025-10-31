@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+const apiUrl = import.meta.env.VITE_API_URL
+
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
@@ -21,7 +23,7 @@ export default function SignIn() {
     }
     setError('');
     try {
-    const response = await fetch("http://localhost:3000/register", {
+    const response = await fetch(`${apiUrl}/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import OrderCard from "../OrderCard";
 import { useScrollRestore } from "../useScrollRestore";
+const apiUrl = import.meta.env.VITE_API_URL
 
 function Profile({ mainRef }) {
   const { userName } = useAuth(); 
@@ -24,7 +25,7 @@ function Profile({ mainRef }) {
       setLoading(true);
       async function fetchOrders() {
         try {
-          const res = await fetch("http://localhost:3000/orders", {
+          const res = await fetch(`${apiUrl}/orders`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",

@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
 const CartContext = createContext();
+const apiUrl = import.meta.env.VITE_API_URL
+
 
 export function useCart() {
   return useContext(CartContext);
@@ -19,7 +21,7 @@ export function CartProvider({ children }) {
       // Se está logado → busca do backend
       setCartLoading(true);
       try {
-        const res = await fetch("http://localhost:3000/getcart", {
+        const res = await fetch(`${apiUrl}/getcart`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) throw new Error("Erro ao buscar carrinho");
@@ -39,7 +41,7 @@ export function CartProvider({ children }) {
       if (localCart.length > 0) {
         try {
           const ids = localCart.map(item => item.id);
-          const res = await fetch("http://localhost:3000/getItems", {
+          const res = await fetch(`${apiUrl}/getItems`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -75,7 +77,7 @@ export function CartProvider({ children }) {
     
     if (token) {
       try {
-        const res = await fetch("http://localhost:3000/cart", {
+        const res = await fetch(`${apiUrl}/cart`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -108,7 +110,7 @@ export function CartProvider({ children }) {
     if (token) {
       // Utilizador logado → remove no backend
       try {
-        const res = await fetch(`http://localhost:3000/cart/${productId}`, {
+        const res = await fetch(`${apiUrl}/cart/${productId}`, {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -132,7 +134,7 @@ export function CartProvider({ children }) {
     if (token) {
       
       try {
-        const res = await fetch(`http://localhost:3000/cart`, {
+        const res = await fetch(`${apiUrl}/cart`, {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
         });

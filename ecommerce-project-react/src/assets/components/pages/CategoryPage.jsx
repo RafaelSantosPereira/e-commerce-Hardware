@@ -12,6 +12,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+const apiUrl = import.meta.env.VITE_API_URL
+
+
 const categoriaParaId = {
   'processadores': 1,
   'placas-graficas': 2,
@@ -52,7 +55,7 @@ function CategoryPage({ mainRef }) {
   const id = categoriaParaId[categoria];
   if (!id) return;
 
-  fetch(`http://localhost:3000/products/category/id/${id}`)
+  fetch(`${apiUrl}/products/category/id/${id}`)
     .then(res => res.json())
     .then(json => {
       setData(json);

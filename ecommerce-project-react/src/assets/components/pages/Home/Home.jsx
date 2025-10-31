@@ -18,7 +18,8 @@ function Home({ mainRef }) {
   };
 
   useEffect(() => {
-    fetch(`http://localhost:3000/products`)
+    const apiUrl = import.meta.env.VITE_API_URL
+    fetch(`${apiUrl}/products`)
       .then(res => res.json())
       .then(json => {
         setData(json);

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { idParaCategoria } from "@/assets/export_files/idParaCategoria";
 import CardItem from '../CardItem';
 import { useScrollRestore } from "../useScrollRestore";
+const apiUrl = import.meta.env.VITE_API_URL
 
 // Componente de layout reutilizável
 const SearchLayout = ({ children }) => (
@@ -34,7 +35,7 @@ export default function Search({ mainRef }) {
     setLoading(true);
     setError(null);
 
-    fetch(`http://localhost:3000/products/search?searchQuery=${encodeURIComponent(query)}`)
+    fetch(`${apiUrl}/products/search?searchQuery=${encodeURIComponent(query)}`)
       .then(res => {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
