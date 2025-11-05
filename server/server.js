@@ -3,9 +3,9 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const pool = require('./db');
-const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 require('dotenv').config();
+const { Resend } = require('resend');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,10 +13,12 @@ const PORT = process.env.PORT || 3000;
 // Detectar ambiente
 const isProduction = process.env.NODE_ENV === 'production';
 
-// Configurar CORS dinamicamente
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+
 app.use(cors({
   origin: isProduction 
-    ? process.env.FRONTEND_URL   // exemplo: https://teu-front.vercel.app
+    ? process.env.FRONTEND_URL   
     : 'http://localhost:5173',   // ambiente local
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
@@ -24,21 +26,19 @@ app.use(cors({
 
 app.use(express.json());
 
-// Nodemailer
-const transporter = nodemailer.createTransport({
-  service: "Gmail",
-  auth: {
-    user: "rafael.ocyan@gmail.com",
-    pass: process.env.GM_PASS,
-  },
-});
 
-// Teste de rota
+
+
+
+
+
+
+
 app.get('/', (req, res) => {
-  res.send(`API online em modo ${isProduction ? 'Produção' : 'Desenvolvimento'} 🚀`);
+  res.send(`API online em modo ${isProduction ? 'Produção' : 'Desenvolvimento'}`);
 });
 
-//
+
 app.get('/products', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM product');
@@ -68,7 +68,6 @@ app.get('/products/category/id/:categoryId', async (req, res) => {
 app.get('/products/:id/details', async (req, res) => {
   const { id } = req.params;
   try {
-    //informaçao basica
     const productResult = await pool.query(
       `SELECT id, name, price, image_url FROM product WHERE id = $1`,
       [id]
@@ -79,7 +78,6 @@ app.get('/products/:id/details', async (req, res) => {
     }
 
     const product = productResult.rows[0];
-    //specs do produto
     const specsResult = await pool.query(
       `SELECT spec_key, spec_value FROM product_specs WHERE product_id = $1`,
       [id]
@@ -136,33 +134,34 @@ app.post('/register', async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 10);
     const token = uuidv4();
     const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
+    const verifyUrl = `${process.env.SERVER_URL || 'http://localhost:3000'}/verify/${token}`;
+
 
     await pool.query(
       `INSERT INTO user_auth (user_id, email, password_hash, is_verified, verify_token, verify_token_expires)
        VALUES ($1, $2, $3, false, $4, $5)`,
       [userId, email, passwordHash, token, tokenExpiry]
     );
-
     // envio de email de comfirmaçao
-    const verifyUrl = `http://localhost:3000/verify/${token}`;
-    await transporter.sendMail({
-      from: '"CompuStore" <rafael.ocyan@gmail.com> ',
-      to: email,
-      subject: "Confirme o seu email",
-      html: `
-        <h2>Bem-vindo, ${name}!</h2>
-        <p>A CompuStore é um projeto criado para fins pessoais sem qualquer intuito malicioso ou lucrativo</p>
-        <p>Para ativar a sua conta, clique no link abaixo:</p>
-        <a href="${verifyUrl}">${verifyUrl}</a>
-        <p>Este link é válido por 24 horas.</p>
-      `
-    });
+    const resendResponse = await resend.emails.send({
+    from: "onboarding@resend.dev", 
+    to: email,
+    subject: 'Confirme o seu email',
+    html: `
+      <h2>Bem-vindo, ${name}!</h2>
+      <p>A CompuStore é um projeto criado para fins pessoais sem qualquer intuito malicioso ou lucrativo.</p>
+      <p>Para ativar a sua conta, clique no link abaixo:</p>
+      <a href="${verifyUrl}">${verifyUrl}</a>
+      <p>Este link é válido por 24 horas.</p>
+    `,
+  });
 
+  console.log("Resend response:", resendResponse);
 
     res.status(201).json({ message: 'Verifique o seu email para confirmar a criaçao da conta.' });
   } catch (error) {
-    console.error('Erro no registo:', error);
-    res.status(500).send('Erro no registo');
+  console.error('Erro no registo:', error);
+  res.status(500).json({ message: 'Erro no registo' });
   }
 });
 
@@ -185,7 +184,7 @@ app.get('/verify/:token', async (req, res) => {
       [token]
     );
 
-    res.redirect('http://localhost:5173/login?verified=success');
+    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?verified=success`);
 
     
   } catch (error) {
@@ -193,6 +192,8 @@ app.get('/verify/:token', async (req, res) => {
     res.status(500).send('Erro na verificação');
   }
 });
+
+
 
 
 app.post('/login', async (req, res) => {
