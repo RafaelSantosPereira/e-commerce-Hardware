@@ -126,7 +126,7 @@ useEffect(() => {
   !loading && data.length > 0      // habilita quando os dados carregam
 );
 
-  if (loading) return <div>Carregando...</div>;
+  if (loading) return <div>A carregar produtos...</div>;
   if (!data.length) return <div>Categoria não encontrada.</div>;
 
   return (

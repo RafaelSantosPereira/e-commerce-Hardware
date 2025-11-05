@@ -35,7 +35,7 @@ function Home({ mainRef }) {
   const isRestoring = useScrollRestore(mainRef, "homeScrollPosition", !loading && data.length > 0);
 
   if (loading) {
-    return <p className="text-center mt-8">Carregando produtos...</p>;
+    return <p className="text-center mt-8">A carregar produtos...</p>;
   }
 
   return (
