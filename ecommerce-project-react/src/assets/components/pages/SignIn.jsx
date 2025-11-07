@@ -73,7 +73,7 @@ export default function SignIn() {
         "
       >
         ⚠️ <span className="font-semibold">Atenção:</span> alguns serviços de email, como o Outlook ou Hotmail, podem bloquear o envio de mensagens da CompuStore.  
-        Recomendamos usar um email <span className="font-medium">Gmail</span> ou outro serviço alternativo para garantir a ativação da sua conta.
+        Recomendo usar um email <span className="font-medium">Gmail</span> ou outro serviço alternativo para garantir a ativação da sua conta.
       </h2>
 
       {/* Título */}
