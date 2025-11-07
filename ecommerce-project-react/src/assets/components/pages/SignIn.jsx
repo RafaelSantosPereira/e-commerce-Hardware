@@ -50,75 +50,98 @@ export default function SignIn() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-full px-4 bg-gray-50 dark:bg-[#121212]">
-      <div className="max-w-md w-full bg-white dark:bg-[#1f1f1f] p-8 rounded-xl shadow-lg">
-        <h2 className="text-3xl font-bold text-blue-500 mb-6 text-center">Criar Conta</h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <label className="block">
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Email"
-            />
-          </label>
-          <label className="block">
-            <input
-              type="text"
-              required
-              value={nome}
-              onChange={e => setNome(e.target.value)}
-              className="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Nome"
-            />
-          </label>
-          <label className="block">
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={e => {
-                setPassword(e.target.value);
-                if (error) setError('');
-              }}
-              className="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Password"
-            />
-          </label>
+  <div className="flex items-center justify-center h-full w-full bg-gray-50 dark:bg-[#121212] px-4">
+    <div
+      className="
+        w-full max-w-md 
+        bg-white dark:bg-[#1f1f1f] 
+        p-6 sm:p-8 
+        rounded-xl shadow-lg 
+        flex flex-col 
+        justify-center 
+        max-h-[90vh] overflow-y-auto
+      "
+    >
+      {/* Aviso */}
+      <h2
+        className="
+          text-xs sm:text-sm 
+          text-yellow-800 dark:text-yellow-300 
+          bg-yellow-100 dark:bg-yellow-900 
+          px-3 py-2 rounded-lg mb-4 
+          text-center leading-relaxed
+        "
+      >
+        ⚠️ <span className="font-semibold">Atenção:</span> alguns serviços de email, como o Outlook ou Hotmail, podem bloquear o envio de mensagens da CompuStore.  
+        Recomendamos usar um email <span className="font-medium">Gmail</span> ou outro serviço alternativo para garantir a ativação da sua conta.
+      </h2>
 
-          <label className="block">
-            <input
-              type="password"
-              required
-              value={confirmPass}
-              onChange={e => {
-                setConfirmPass(e.target.value);
-                if (error) setError('');
-              }}
-              className="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Password"
-            />
-          </label>
+      {/* Título */}
+      <h2 className="text-2xl font-bold text-blue-500 mb-5 text-center">
+        Criar Conta
+      </h2>
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+      {/* Formulário */}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <input
+          type="email"
+          required
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+          placeholder="Email"
+        />
 
-          <button
-            type="submit"
-            className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition"
-          >
-            Criar Conta
-          </button>
-        </form>
+        <input
+          type="text"
+          required
+          value={nome}
+          onChange={e => setNome(e.target.value)}
+          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+          placeholder="Nome"
+        />
 
-        <p className="mt-6 text-center text-gray-600 dark:text-gray-400">
-          Já tem conta?{' '}
-          <Link to="/login" className="text-blue-500 hover:underline">
-            Entrar aqui
-          </Link>
-        </p>
-      </div>
+        <input
+          type="password"
+          required
+          value={password}
+          onChange={e => {
+            setPassword(e.target.value);
+            if (error) setError('');
+          }}
+          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+          placeholder="Password"
+        />
+
+        <input
+          type="password"
+          required
+          value={confirmPass}
+          onChange={e => {
+            setConfirmPass(e.target.value);
+            if (error) setError('');
+          }}
+          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+          placeholder="Confirmar Password"
+        />
+
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+
+        <button
+          type="submit"
+          className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition text-sm"
+        >
+          Criar Conta
+        </button>
+      </form>
+
+      <p className="mt-5 text-center text-gray-600 dark:text-gray-400 text-sm">
+        Já tem conta?{' '}
+        <Link to="/login" className="text-blue-500 hover:underline">
+          Entrar aqui
+        </Link>
+      </p>
     </div>
-  );
+  </div>
+);
 }

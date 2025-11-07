@@ -100,7 +100,7 @@ export default function Login() {
     <div className="flex flex-col items-center justify-center h-full px-4 bg-gray-50 dark:bg-[#121212]">
       <div className="max-w-md w-full bg-white dark:bg-[#1f1f1f] p-8 rounded-xl shadow-lg">
         <h2 className="text-3xl font-bold text-blue-500 mb-6 text-center">Fazer Login</h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <label className="block">
             <input
               type="email"
@@ -124,7 +124,7 @@ export default function Login() {
                 setPassword(e.target.value);
                 if (error) setError('');
               }}
-              className="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 mb-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Password"
             />
           </label>
