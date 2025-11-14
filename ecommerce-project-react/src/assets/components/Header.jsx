@@ -131,7 +131,7 @@ function Header() {
                       Fazer Login
                     </Link>
                     <Link
-                      to="/SignIn"
+                      to="/SignUp"
                       className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
                       onClick={() => setUserMenuOpen(false)}
                     >
@@ -179,8 +179,8 @@ function Header() {
         <nav className="p-4 space-y-4 text-foreground dark:text-[#cbd5e1]">
           <Link to="/processadores" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors">Processadores</Link>
           <Link to="/placas-graficas" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors">Placas Gráficas</Link>
-          <Link to="/motherboards" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors">Motherboards</Link>
           <Link to="/memorias-ram" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors">Memórias RAM</Link>
+          <Link to="/motherboards" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors">Motherboards</Link>
           <Link to="/armazenamento" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors">Armazenamento</Link>
           <Link to="/fontes-de-alimentacao" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors">Fontes de Alimentação</Link>
           <Link to="/caixas" onClick={toggleSidebar} className="block hover:text-blue-500 transition-colors">Caixas</Link>

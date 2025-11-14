@@ -5,7 +5,7 @@ import Home from './assets/components/pages/Home/Home';
 import CategoryPage from './assets/components/pages/CategoryPage';
 import Detail from './assets/components/pages/Detail';
 import Login from './assets/components/pages/Login';
-import SignIn from './assets/components/pages/SignIn';
+import SignIn from './assets/components/pages/SignUp';
 import Search from './assets/components/pages/Search';
 import Profile from './assets/components/pages/Profile';
 import Cart from './assets/components/pages/Cart';
@@ -28,7 +28,7 @@ function App() {
                 <Route path="/:categoria" element={<CategoryPage mainRef={mainRef} />} />
                 <Route path="/:categoria/:id" element={<Detail />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/SignIn" element={<SignIn />} />
+                <Route path="/SignUp" element={<SignIn />} />
                 <Route path="/Search" element={<Search mainRef={mainRef} />} />
                 <Route path="/profile" element={<Profile mainRef={mainRef} />} />
               </Routes>

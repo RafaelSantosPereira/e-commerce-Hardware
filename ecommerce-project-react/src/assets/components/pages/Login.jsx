@@ -98,7 +98,7 @@ export default function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center h-full px-4 bg-gray-50 dark:bg-[#121212]">
-      <div className="max-w-md w-full bg-white dark:bg-[#1f1f1f] p-8 rounded-xl shadow-lg">
+      <div className="max-w-md w-full bg-white dark:bg-[#1f1f1f] p-8 rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.25)]">
         <h2 className="text-3xl font-bold text-blue-500 mb-6 text-center">Fazer Login</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <label className="block">
@@ -141,7 +141,7 @@ export default function Login() {
 
         <p className="mt-6 text-center text-gray-600 dark:text-gray-400">
           Não tem conta?{' '}
-          <Link to="/SignIn" className="text-blue-500 hover:underline">
+          <Link to="/SignUp" className="text-blue-500 hover:underline">
             Criar uma aqui
           </Link>
         </p>

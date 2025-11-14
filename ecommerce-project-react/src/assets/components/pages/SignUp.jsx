@@ -56,7 +56,7 @@ export default function SignIn() {
         w-full max-w-md 
         bg-white dark:bg-[#1f1f1f] 
         p-6 sm:p-8 
-        rounded-xl shadow-lg 
+        rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.25)]
         flex flex-col 
         justify-center 
         max-h-[90vh] overflow-y-auto
@@ -72,9 +72,11 @@ export default function SignIn() {
           text-center leading-relaxed
         "
       >
-        ⚠️ <span className="font-semibold">Atenção:</span> alguns serviços de email, como o Outlook ou Hotmail, podem bloquear o envio de mensagens da CompuStore.  
-        Recomendo usar um email <span className="font-medium">Gmail</span> ou outro serviço alternativo para garantir a ativação da sua conta.
+        ⚠️ Após efetuar o registo, verifique a pasta de spam ou lixo eletrónico caso nao encontre o email de verificação.
       </h2>
+      
+
+      
 
       {/* Título */}
       <h2 className="text-2xl font-bold text-blue-500 mb-5 text-center">
@@ -88,7 +90,7 @@ export default function SignIn() {
           required
           value={email}
           onChange={e => setEmail(e.target.value)}
-          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
           placeholder="Email"
         />
 
@@ -97,7 +99,7 @@ export default function SignIn() {
           required
           value={nome}
           onChange={e => setNome(e.target.value)}
-          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
           placeholder="Nome"
         />
 
@@ -109,7 +111,7 @@ export default function SignIn() {
             setPassword(e.target.value);
             if (error) setError('');
           }}
-          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
           placeholder="Password"
         />
 
@@ -121,7 +123,7 @@ export default function SignIn() {
             setConfirmPass(e.target.value);
             if (error) setError('');
           }}
-          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
           placeholder="Confirmar Password"
         />
 
