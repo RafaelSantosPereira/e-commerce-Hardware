@@ -27,11 +27,44 @@ app.use(cors({
 app.use(express.json());
 
 
+async function sendVerificationEmail(email, name, token) {
+  try {
+    const verifyUrl = `${process.env.SERVER_URL || 'http://localhost:3000'}/verify/${token}`;
+    
+    const resendResponse = await resend.emails.send({
+    from: '"CompuStore" <compustore@rafaelpereira.site>',
+    to: email,
+    subject: 'Confirme o seu email',
+    html: `
+      <h2>Bem-vindo à CompuStore, ${name}!</h2>
+      <p>Para ativar a sua conta, clique no botão abaixo:</p>
+      
+      <a href="${verifyUrl}" 
+        style="
+          display: inline-block;
+          padding: 12px 20px;
+          background-color: #1a73e8;
+          color: #ffffff;
+          text-decoration: none;
+          border-radius: 6px;
+          font-weight: bold;
+          font-size: 16px;
+          margin: 14px 0;
+        ">
+        Ativar Conta
+      </a>
 
+      <p>Este link é válido por 24 horas.</p>
+    `,
+  });
 
-
-
-
+    console.log("Email de verificação enviado para:", email);
+    return resendResponse;
+  } catch (error) {
+    console.error('Erro ao enviar email:', error);
+    throw error;
+  }
+}
 
 
 app.get('/', (req, res) => {
@@ -116,13 +149,53 @@ app.post('/register', async (req, res) => {
   const { name, email, password, role } = req.body;
   
   try {
-    // Verificar se email já existe
-    const exists = await pool.query('SELECT id FROM user_auth WHERE email = $1', [email]);
-    if (exists.rows.length > 0) {
+    // Verificar se email já existe e está verificado
+    const verified = await pool.query(
+      'SELECT id FROM user_auth WHERE email = $1 AND is_verified = true',
+      [email]
+    );
+    if (verified.rows.length > 0) {
       return res.status(400).json({ message: 'Email já registado' });
     }
 
-    // Criar user base
+    // Verificar se email existe mas não está verificado
+    const notVerified = await pool.query(
+      'SELECT id, user_id FROM user_auth WHERE email = $1 AND is_verified = false',
+      [email]
+    );
+
+    if (notVerified.rows.length > 0) {
+      // Email existe mas não está verificado - fazer UPDATE
+      const userAuthId = notVerified.rows[0].id;
+      const userId = notVerified.rows[0].user_id;
+
+      const passwordHash = await bcrypt.hash(password, 10);
+      const token = uuidv4();
+      const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
+
+      // Atualizar user_auth com nova password e novo token
+      await pool.query(
+        `UPDATE user_auth 
+         SET password_hash = $1, verify_token = $2, verify_token_expires = $3
+         WHERE id = $4`,
+        [passwordHash, token, tokenExpiry, userAuthId]
+      );
+
+      // Atualizar nome do user (caso tenha mudado)
+      await pool.query(
+        `UPDATE users SET name = $1 WHERE id = $2`,
+        [name, userId]
+      );
+
+      // Enviar email usando a função reutilizável
+      await sendVerificationEmail(email, name, token);
+
+      return res.status(200).json({ 
+        message: 'Email de verificação reenviado. Verifique o seu email para confirmar a criação da conta.' 
+      });
+    }
+
+    // Email não existe - criar nova conta
     const userResult = await pool.query(
       'INSERT INTO users (name, role) VALUES ($1, $2) RETURNING id',
       [name, role || 'customer']
@@ -134,35 +207,26 @@ app.post('/register', async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 10);
     const token = uuidv4();
     const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
-    const verifyUrl = `${process.env.SERVER_URL || 'http://localhost:3000'}/verify/${token}`;
-
 
     await pool.query(
       `INSERT INTO user_auth (user_id, email, password_hash, is_verified, verify_token, verify_token_expires)
        VALUES ($1, $2, $3, false, $4, $5)`,
       [userId, email, passwordHash, token, tokenExpiry]
     );
-    // envio de email de comfirmaçao
-    const resendResponse = await resend.emails.send({
-    from: "onboarding@resend.dev", 
-    to: email,
-    subject: 'Confirme o seu email',
-    html: `
-      <h2>Bem-vindo, ${name}!</h2>
-      <p>A CompuStore é um projeto criado para fins pessoais sem qualquer intuito malicioso ou lucrativo.</p>
-      <p>Para ativar a sua conta, clique no link abaixo:</p>
-      <a href="${verifyUrl}">${verifyUrl}</a>
-      <p>Este link é válido por 24 horas.</p>
-    `,
-  });
 
-  console.log("Resend response:", resendResponse);
+    // Enviar email usando a função reutilizável
+    await sendVerificationEmail(email, name, token);
 
-    res.status(201).json({ message: 'Verifique o seu email para confirmar a criaçao da conta.' });
+    res.status(201).json({ 
+      message: 'Verifique o seu email para confirmar a criação da conta.' 
+    });
+
   } catch (error) {
-  console.error('Erro no registo:', error);
-  res.status(500).json({ message: 'Erro no registo' });
+    console.error('Erro no registo:', error);
+    res.status(500).json({ message: 'Erro no registo' });
   }
+
+  console.log("Resend key:", process.env.RESEND_API_KEY)
 });
 
 
@@ -190,6 +254,79 @@ app.get('/verify/:token', async (req, res) => {
   } catch (error) {
     console.error('Erro na verificação:', error);
     res.status(500).send('Erro na verificação');
+  }
+});
+
+// Reenviar email de verificação
+app.post('/resend-verification', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: 'Email é obrigatório' });
+  }
+
+  try {
+    // Buscar conta por email
+    const userQuery = await pool.query(
+      `SELECT ua.id, ua.is_verified, ua.verify_token, ua.verify_token_expires, u.name
+       FROM user_auth ua
+       JOIN users u ON ua.user_id = u.id
+       WHERE ua.email = $1`,
+      [email]
+    );
+
+    if (userQuery.rows.length === 0) {
+      return res.status(200).json({ 
+        message: 'Se a conta existir, um email de verificação será enviado.' 
+      });
+    }
+
+    const user = userQuery.rows[0];
+
+    // Se já está verificado, não precisa verificar novamente
+    if (user.is_verified) {
+      return res.status(400).json({ 
+        message: 'Esta conta já está verificada. Faça login normalmente.' 
+      });
+    }
+
+    // Gerar novo token
+    const token = uuidv4();
+    const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
+    const verifyUrl = `${process.env.SERVER_URL || 'http://localhost:3000'}/verify/${token}`;
+
+    // Atualizar token na base de dados
+    await pool.query(
+      `UPDATE user_auth 
+       SET verify_token = $1, verify_token_expires = $2 
+       WHERE id = $3`,
+      [token, tokenExpiry, user.id]
+    );
+
+    // Enviar email de verificação
+    const resendResponse = await resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: email,
+      subject: 'Confirme o seu email - Compustore',
+      html: `
+        <h2>Olá, ${user.name}!</h2>
+        <p>Recebeu este email porque solicitou um novo link de verificação.</p>
+        <p>Para ativar a sua conta, clique no link abaixo:</p>
+        <a href="${verifyUrl}">${verifyUrl}</a>
+        <p>Este link é válido por 24 horas.</p>
+        <p>Se não solicitou isto, pode ignorar este email.</p>
+      `,
+    });
+
+    console.log("Email de verificação reenviado:", resendResponse);
+
+    res.status(200).json({ 
+      message: 'Email de verificação reenviado com sucesso. Verifique a sua caixa de correio.' 
+    });
+
+  } catch (error) {
+    console.error('Erro ao reenviar email:', error);
+    res.status(500).json({ message: 'Erro ao reenviar email de verificação' });
   }
 });
 
