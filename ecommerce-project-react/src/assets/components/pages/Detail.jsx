@@ -9,7 +9,7 @@ function Detail() {
   const { addToCart } = useCart(); // usar o contexto do carrinho
 
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
     fetch(`${apiUrl}/products/${id}/details`)
       .then(res => res.json())
       .then(json => {

@@ -3,7 +3,7 @@ import MiniCardItem from "../MiniCardItem";
 import { idParaCategoria } from "@/assets/export_files/idParaCategoria";
 import { useAuth } from "../contexts/AuthContext";
 import {useState} from "react";
-const apiUrl = import.meta.env.VITE_API_URL
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 function Cart() {
   const { cartItems, totalPrice, clearCart, deleteCart } = useCart();

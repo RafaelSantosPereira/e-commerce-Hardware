@@ -64,6 +64,8 @@
 	CREATE TABLE orders (
 	  id SERIAL PRIMARY KEY,
 	  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+	  address TEXT NOT NULL,
+	  receiver_name TEXT NOT NULL,
 	  total_price NUMERIC(10, 2) NOT NULL,
 	  status TEXT DEFAULT 'pending',  
 	  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

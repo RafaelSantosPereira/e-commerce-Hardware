@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import OrderCard from "../OrderCard";
 import { useScrollRestore } from "../useScrollRestore";
-const apiUrl = import.meta.env.VITE_API_URL
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 function Profile({ mainRef }) {
   const { userName } = useAuth(); 

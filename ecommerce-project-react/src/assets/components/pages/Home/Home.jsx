@@ -18,7 +18,7 @@ function Home({ mainRef }) {
   };
 
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
     fetch(`${apiUrl}/products`)
       .then(res => res.json())
       .then(json => {

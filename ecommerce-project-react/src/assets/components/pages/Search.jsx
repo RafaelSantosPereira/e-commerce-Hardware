@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { idParaCategoria } from "@/assets/export_files/idParaCategoria";
 import CardItem from '../CardItem';
 import { useScrollRestore } from "../useScrollRestore";
-const apiUrl = import.meta.env.VITE_API_URL
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 // Componente de layout reutilizável
 const SearchLayout = ({ children }) => (
