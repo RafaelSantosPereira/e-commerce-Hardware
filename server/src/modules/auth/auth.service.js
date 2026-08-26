@@ -126,4 +126,14 @@ async function login(email, password) {
   };
 }
 
-module.exports = { register, verify, resendVerification, login };
+// Obtém os dados públicos da sessão atual.
+async function getSession(userId) {
+  const result = await pool.query(
+    'SELECT name, role FROM users WHERE id = $1',
+    [userId]
+  );
+
+  return result.rows[0] || null;
+}
+
+module.exports = { register, verify, resendVerification, login, getSession };

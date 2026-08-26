@@ -34,8 +34,10 @@ export default function Search({ mainRef }) {
 
     setLoading(true);
     setError(null);
+    const limit = 20;
+    const offset = 0;
 
-    fetch(`${apiUrl}/products/search?searchQuery=${encodeURIComponent(query)}`)
+    fetch(`${apiUrl}/products/search?searchQuery=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}`)
       .then(res => {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);

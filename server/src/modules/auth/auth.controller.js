@@ -45,10 +45,48 @@ async function resendVerification(req, res) {
 async function login(req, res) {
   try {
     const result = await authService.login(req.body.email, req.body.password);
-    res.json({ message: 'Login bem-sucedido', ...result });
+    res.cookie('authToken', result.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/',
+    });
+
+    res.json({
+      message: 'Login bem-sucedido',
+      name: result.name,
+      role: result.role,
+    });
   } catch (error) {
     handleError(res, error, 'Erro no login');
   }
 }
 
-module.exports = { register, verify, resendVerification, login };
+// Devolve os dados mínimos da sessão atual.
+async function session(req, res) {
+  try {
+    const user = await authService.getSession(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'Utilizador não encontrado' });
+    }
+
+    res.json({ userId: req.user.id, name: user.name, role: user.role });
+  } catch (error) {
+    handleError(res, error, 'Erro ao obter sessão');
+  }
+}
+
+// Invalida o cookie de autenticação no navegador.
+function logout(req, res) {
+  res.clearCookie('authToken', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    path: '/',
+  });
+  res.sendStatus(204);
+}
+
+module.exports = { register, verify, resendVerification, login, session, logout };

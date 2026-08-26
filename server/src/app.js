@@ -14,6 +14,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 app.use(cors({
   origin: isProduction ? process.env.FRONTEND_URL : 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  exposedHeaders: ['X-Total-Count'],
   credentials: true,
 }));
 app.use(express.json());

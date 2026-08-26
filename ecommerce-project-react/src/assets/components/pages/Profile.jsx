@@ -5,8 +5,7 @@ import { useScrollRestore } from "../useScrollRestore";
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 function Profile({ mainRef }) {
-  const { userName } = useAuth(); 
-  const token = localStorage.getItem("authToken");
+  const { userName, isLogged } = useAuth();
   const [orders, setOrders] = useState([]); 
   const [loading, setLoading] = useState(true);
 
@@ -21,16 +20,14 @@ function Profile({ mainRef }) {
 
   // Buscar encomendas
   useEffect(() => {
-    if (activeTab === "encomendas" && token) {
+    if (activeTab === "encomendas" && isLogged) {
       setLoading(true);
       async function fetchOrders() {
         try {
           const res = await fetch(`${apiUrl}/orders`, {
             method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`,
-            },
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
           });
           const data = await res.json();
           setOrders(data);
@@ -44,7 +41,7 @@ function Profile({ mainRef }) {
     } else {
       setLoading(false);
     }
-  }, [activeTab, token]);
+  }, [activeTab, isLogged]);
 
   // Restaurar scroll apenas depois dos dados carregarem
   const isRestoring = useScrollRestore(

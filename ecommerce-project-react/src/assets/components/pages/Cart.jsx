@@ -8,7 +8,6 @@ const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 function Cart() {
   const { cartItems, totalPrice, clearCart, deleteCart } = useCart();
   const { isLogged, userName, logout } = useAuth();
-  const token = localStorage.getItem("authToken");
   const [nome, setNome] = useState("");
   const [morada, setMorada] = useState("");
 
@@ -32,8 +31,8 @@ function Cart() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
           },
+          credentials: "include",
           body: JSON.stringify({
             items: itemsForOrder,
             address: morada,
@@ -104,12 +103,14 @@ function Cart() {
           <input type="text"
             placeholder="Nome do remetente"
             value={nome}
+            required
             onChange={(e) => setNome(e.target.value)}
             className="mt-1 w-48 px-4 py-2  text-foreground bg-gray-100 rounded-[10px] h-12
               dark:bg-background dark:text-[#d1d5db] placeholder:text-slate-500"
           />
           <input type="text" 
           placeholder="Morada"
+          requiredf
           value={morada}
           onChange={(e) => setMorada(e.target.value)}
           className="mt-1 w-48 px-4 py-2 text-foreground bg-gray-100 rounded-[10px] h-12

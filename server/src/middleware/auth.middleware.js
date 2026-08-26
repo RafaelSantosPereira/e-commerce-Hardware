@@ -1,8 +1,16 @@
 const jwt = require('jsonwebtoken');
 
+function getCookieValue(cookieHeader, name) {
+  const cookie = cookieHeader
+    ?.split(';')
+    .map(part => part.trim())
+    .find(part => part.startsWith(`${name}=`));
+
+  return cookie ? decodeURIComponent(cookie.slice(name.length + 1)) : null;
+}
+
 function authenticateToken(req, res, next) {
-  const authHeader = req.headers.authorization;
-  const token = authHeader?.split(' ')[1];
+  const token = getCookieValue(req.headers.cookie, 'authToken');
 
   if (!token) {
     return res.status(401).json({ message: 'Precisa estar logado' });

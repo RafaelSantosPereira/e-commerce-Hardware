@@ -26,6 +26,22 @@ const categoriaParaId = {
   'coolers': 8,
 };
 
+function getPaginationItems(currentPage, totalPages) {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+
+  if (currentPage <= 4) {
+    return [1, 2, 3, 4, 5, 'ellipsis-right', totalPages];
+  }
+
+  if (currentPage >= totalPages - 3) {
+    return [1, 'ellipsis-left', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+  }
+
+  return [1, 'ellipsis-left', currentPage - 1, currentPage, currentPage + 1, 'ellipsis-right', totalPages];
+}
+
 // IMPORTS MANTIDOS...
 
 function CategoryPage({ mainRef }) {
@@ -34,7 +50,6 @@ function CategoryPage({ mainRef }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
   const [brands, setBrands] = useState([]);
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [sortOption, setSortOption] = useState('');
@@ -42,70 +57,74 @@ function CategoryPage({ mainRef }) {
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(1000);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [filtersInitialized, setFiltersInitialized] = useState(false);
+  const [initializedCategory, setInitializedCategory] = useState(null);
+  const productsPerPage = 15;
 
   useEffect(() => {
     const brandsFromUrl = searchParams.get("brands");
-    if (brandsFromUrl) {
-      setSelectedBrands(brandsFromUrl.split(','));
-    }
+    setSelectedBrands(brandsFromUrl ? brandsFromUrl.split(',') : []);
   }, [searchParams]);
 
-  // Obter produtos
+  useEffect(() => {
+    setFiltersInitialized(false);
+    setInitializedCategory(null);
+    setCurrentPage(1);
+    setLoading(true);
+  }, [categoria]);
+
+  // Obter as opções globais de filtro da categoria.
+  useEffect(() => {
+    const id = categoriaParaId[categoria];
+    if (!id) return;
+
+    fetch(`${apiUrl}/products/category/id/${id}/filters`)
+      .then(res => res.json())
+      .then(({ brands: availableBrands, minPrice: categoryMinPrice, maxPrice: categoryMaxPrice }) => {
+        const numericMinPrice = Number(categoryMinPrice);
+        const numericMaxPrice = Number(categoryMaxPrice);
+
+        setBrands(availableBrands);
+        setMinPrice(numericMinPrice);
+        setMaxPrice(numericMaxPrice);
+        setPriceRange([numericMinPrice, numericMaxPrice]);
+        setFiltersInitialized(true);
+        setInitializedCategory(categoria);
+      });
+  }, [categoria]);
+
+  // Obter produtos já filtrados e ordenados pela base de dados.
  useEffect(() => {
   const id = categoriaParaId[categoria];
-  if (!id) return;
+  if (!id || !filtersInitialized || initializedCategory !== categoria) return;
+  const quantidade = productsPerPage;
+  const offset = (currentPage - 1) * quantidade;
+  const params = new URLSearchParams({
+    limit: quantidade,
+    offset,
+  });
 
-  fetch(`${apiUrl}/products/category/id/${id}`)
+  if (selectedBrands.length > 0) params.set('brands', selectedBrands.join(','));
+  params.set('minPrice', priceRange[0]);
+  params.set('maxPrice', priceRange[1]);
+  if (sortOption) params.set('sort', sortOption);
+  
+  fetch(`${apiUrl}/products/category/id/${id}?${params}`)
     .then(res => res.json())
-    .then(json => {
-      setData(json);
-      setFilteredData(json);
-      const uniqueBrands = [...new Set(json.map(item => item.brand))].filter(Boolean);
-      setBrands(uniqueBrands);
-
-      const prices = json.map(p => p.price);
-      const min = Math.min(...prices);
-      const max = Math.max(...prices);
-      setMinPrice(min);
-      setMaxPrice(max);
-      setPriceRange([min, max]);
+    .then(({ products, total }) => {
+      setData(products);
+      setTotalProducts(total);
 
       setLoading(false);
     });
-}, [categoria]);
-
-// Aplicar filtros
-useEffect(() => {
-  let dataSort = [...data];
-
-  if (selectedBrands.length > 0) {
-    dataSort = dataSort.filter(product => selectedBrands.includes(product.brand));
-  }
-
-  // Filtro por preço
-  dataSort = dataSort.filter(product => 
-    product.price >= priceRange[0] && product.price <= priceRange[1]
-  );
-
-  if (sortOption === 'price-asc') {
-    dataSort.sort((a, b) => a.price - b.price);
-  } else if (sortOption === 'price-desc') {
-    dataSort.sort((a, b) => b.price - a.price);
-  } else if (sortOption === 'name-asc') {
-    dataSort.sort((a, b) => a.name.localeCompare(b.name));
-  } else if (sortOption === 'name-desc') {
-    dataSort.sort((a, b) => b.name.localeCompare(a.name));
-  }
-
-  setFilteredData(dataSort);
-}, [data, selectedBrands, priceRange, sortOption]);
+}, [categoria, currentPage, selectedBrands, priceRange, sortOption, filtersInitialized, initializedCategory]);
 
   const handleBrandToggle = (brand) => {
     let updated = selectedBrands.includes(brand)
       ? selectedBrands.filter(b => b !== brand)
       : [...selectedBrands, brand];
-
-    setSelectedBrands(updated);
 
     const params = new URLSearchParams(searchParams);
     if (updated.length > 0) {
@@ -114,11 +133,24 @@ useEffect(() => {
       params.delete('brands');
     }
     setSearchParams(params);
+    setCurrentPage(1);
   };
 
-  const handleSortChange = (value) => setSortOption(value);
+  const handleSortChange = (value) => {
+    setSortOption(value);
+    setCurrentPage(1);
+  };
 
-  const handlePriceChange = (range) => setPriceRange(range);
+  const handlePriceChange = (range) => {
+    setPriceRange(range);
+    setCurrentPage(1);
+  };
+
+  const totalPages = Math.ceil(totalProducts / productsPerPage);
+  const goToPage = (page) => {
+    setCurrentPage(Math.min(Math.max(page, 1), totalPages));
+    mainRef?.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const isRestoring = useScrollRestore(
   mainRef,
@@ -127,7 +159,7 @@ useEffect(() => {
 );
 
   if (loading) return <div>A carregar produtos...</div>;
-  if (!data.length) return <div>Categoria não encontrada.</div>;
+  if (!data.length) return <div>Nenhum produto encontrado para os filtros selecionados.</div>;
 
   return (
       <div
@@ -163,11 +195,56 @@ useEffect(() => {
         />
 
         <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-          {filteredData.map((product, index) => (
+          {data.map((product, index) => (
             <CardItem key={index} {...product} categoria={categoria} />
           ))}
         </div>
       </div>
+
+      {totalPages > 1 && (
+        <nav className="flex items-center justify-center gap-2 mt-10" aria-label="Paginação de produtos">
+          <button
+            type="button"
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-3 py-2 border rounded-md disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-800"
+            aria-label="Página anterior"
+          >
+            Anterior
+          </button>
+
+          {getPaginationItems(currentPage, totalPages).map(page => (
+            typeof page === 'number' ? (
+              <button
+                type="button"
+                key={page}
+                onClick={() => goToPage(page)}
+                aria-current={page === currentPage ? 'page' : undefined}
+                className={`w-10 h-10 border rounded-md ${page === currentPage
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                }`}
+              >
+                {page}
+              </button>
+            ) : (
+              <span key={page} className="px-1" aria-hidden="true">
+                ...
+              </span>
+            )
+          ))}
+
+          <button
+            type="button"
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-3 py-2 border rounded-md disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-800"
+            aria-label="Próxima página"
+          >
+            Próxima
+          </button>
+        </nav>
+      )}
     </div>
   );
 }

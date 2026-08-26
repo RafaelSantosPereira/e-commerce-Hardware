@@ -11,18 +11,18 @@ export function useCart() {
 export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
   const [cartLoading, setCartLoading] = useState(false);
-  const { token } = useAuth();
+  const { isLogged } = useAuth();
 
   // Função para buscar carrinho do backend
   const fetchCart = async () => {
     
 
-    if (token) {
+    if (isLogged) {
       // Se está logado → busca do backend
       setCartLoading(true);
       try {
         const res = await fetch(`${apiUrl}/getcart`, {
-          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
         });
         if (!res.ok) throw new Error("Erro ao buscar carrinho");
         const data = await res.json();
@@ -71,18 +71,18 @@ export function CartProvider({ children }) {
 
   useEffect(() => {
     fetchCart();
-  }, [token]);
+  }, [isLogged]);
 
   const addToCart = async (productId, quantity) => {
     
-    if (token) {
+    if (isLogged) {
       try {
         const res = await fetch(`${apiUrl}/cart`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
+          credentials: "include",
           body: JSON.stringify({ productId, quantity }),
         });
         if (!res.ok) throw new Error("Erro ao adicionar ao carrinho");
@@ -107,12 +107,12 @@ export function CartProvider({ children }) {
 
   const deleteItem = async (productId) => {
 
-    if (token) {
+    if (isLogged) {
       // Utilizador logado → remove no backend
       try {
         const res = await fetch(`${apiUrl}/cart/${productId}`, {
           method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
         });
         if (!res.ok) throw new Error("Erro ao remover item do carrinho");
         
@@ -131,12 +131,12 @@ export function CartProvider({ children }) {
 
   const deleteCart = async () => {
 
-    if (token) {
+    if (isLogged) {
       
       try {
         const res = await fetch(`${apiUrl}/cart`, {
           method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
         });
         if (!res.ok) throw new Error("Erro ao remover item do carrinho");
         

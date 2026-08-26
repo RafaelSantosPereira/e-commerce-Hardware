@@ -37,6 +37,7 @@ export default function Login() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           email,
           password,
@@ -50,7 +51,7 @@ export default function Login() {
       }
 
       
-      login(result.token, result.name, result.role);
+      login(result.name, result.role);
 
       //Fazer merge do carrinho local
       const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
@@ -62,12 +63,10 @@ export default function Login() {
             quantity: item.quantity
           }));
 
-          const mergeResponse = await fetch("http://localhost:3000/cart/merge", {
+          const mergeResponse = await fetch(`${apiUrl}/cart/merge`, {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${result.token}`
-            },
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({ items: itemsToMerge })
           });
 

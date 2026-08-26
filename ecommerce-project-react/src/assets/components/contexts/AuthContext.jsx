@@ -1,56 +1,59 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
 
+const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem("authToken"));
-  const [isLogged, setIsLogged] = useState(!!token);
-  const [userName, setUserName] = useState(localStorage.getItem("userName"));
-  const [userRole, setUserRole] = useState(localStorage.getItem("userRole"));
+  const [isLogged, setIsLogged] = useState(false);
+  const [userName, setUserName] = useState(null);
+  const [userRole, setUserRole] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (token) {
+    async function restoreSession() {
       try {
-        const decoded = jwtDecode(token);
+        const response = await fetch(`${apiUrl}/session`, {
+          credentials: "include",
+        });
 
-        // verifica se o token expirou
-        const currentTime = Date.now() / 1000; // segundos
-        if (decoded.exp < currentTime) {
-          logout(); // token expirado
-        } else {
+        if (response.ok) {
+          const session = await response.json();
           setIsLogged(true);
+          setUserName(session.name);
+          setUserRole(session.role);
+        } else {
+          setIsLogged(false);
         }
-      } catch (err) {
-        logout(); // token inválido
+      } catch (error) {
+        console.error("Erro ao restaurar sessão:", error);
+        setIsLogged(false);
+      } finally {
+        setIsLoading(false);
       }
-    } else {
-      setIsLogged(false);
     }
-  }, [token]); // <-- reexecuta quando o token muda
 
-  const login = (newToken, name, role) => {
-    localStorage.setItem("authToken", newToken);
-    localStorage.setItem("userName", name);
-    localStorage.setItem("userRole", role);
-    setToken(newToken);
+    restoreSession();
+  }, []);
+
+  const login = (name, role) => {
     setUserName(name);
     setUserRole(role);
     setIsLogged(true);
   };
 
-  const logout = () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userName");
-    localStorage.removeItem("userRole");
-    setToken(null);
+  const logout = async () => {
+    await fetch(`${apiUrl}/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+
     setIsLogged(false);
     setUserName(null);
     setUserRole(null);
   };
 
   return (
-    <AuthContext.Provider value={{ token, isLogged, userName, userRole, login, logout }}>
+    <AuthContext.Provider value={{ isLogged, userName, userRole, isLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

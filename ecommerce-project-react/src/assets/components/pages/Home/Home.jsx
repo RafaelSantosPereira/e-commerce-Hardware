@@ -19,7 +19,10 @@ function Home({ mainRef }) {
 
   useEffect(() => {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-    fetch(`${apiUrl}/products`)
+    const limit = 20;
+    const offset = 0;
+
+    fetch(`${apiUrl}/products?limit=${limit}&offset=${offset}`)
       .then(res => res.json())
       .then(json => {
         setData(json);
