@@ -1,6 +1,6 @@
 import { useCart } from "../contexts/CartContext";
-import MiniCardItem from "../MiniCardItem";
-import { idParaCategoria } from "@/assets/export_files/idParaCategoria";
+import MiniCardItem from "../components/product/MiniCardItem";
+import { idParaCategoria } from "@/data/idParaCategoria";
 import { useAuth } from "../contexts/AuthContext";
 import {useState} from "react";
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';

@@ -1,10 +1,10 @@
 import { useState, useEffect, use } from 'react';
 import { ShoppingCart, User, Sun, Moon, Menu, Search } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import MiniCardItem from './MiniCardItem';
-import { idParaCategoria } from '../export_files/idParaCategoria';
-import { useCart } from './contexts/CartContext';
-import { useAuth } from './contexts/AuthContext';
+import MiniCardItem from '../product/MiniCardItem';
+import { idParaCategoria } from '../../data/idParaCategoria';
+import { useCart } from '../../contexts/CartContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 
 function Header() {

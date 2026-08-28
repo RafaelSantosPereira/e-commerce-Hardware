@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import CardItem from '../../CardItem';
-import { useScrollRestore } from '../../useScrollRestore';
+import CardItem from '../components/product/CardItem';
+import { useScrollRestore } from '../hooks/useScrollRestore';
 
 function Home({ mainRef }) {
   const [data, setData] = useState([]);

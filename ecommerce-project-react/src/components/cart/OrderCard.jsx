@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import MiniCardItem from "./MiniCardItem";
-import { idParaCategoria } from "../export_files/idParaCategoria";
+import MiniCardItem from "../product/MiniCardItem";
+import { idParaCategoria } from "../../data/idParaCategoria";
 
 function OrderCard({ id, address, receiver_name, total_price, created_at, produtos = [] }) {
   const [isOpen, setIsOpen] = useState(true);

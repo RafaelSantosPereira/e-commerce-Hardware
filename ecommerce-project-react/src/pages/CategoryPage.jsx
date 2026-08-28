@@ -1,9 +1,9 @@
 // src/pages/CategoryPage.jsx
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import CardItem from '../CardItem';
-import FilterSidebar from '../FilterSidebar';
-import { useScrollRestore } from '../useScrollRestore';
+import CardItem from '../components/product/CardItem';
+import FilterSidebar from '../components/product/FilterSidebar';
+import { useScrollRestore } from '../hooks/useScrollRestore';
 import {
   Select,
   SelectContent,

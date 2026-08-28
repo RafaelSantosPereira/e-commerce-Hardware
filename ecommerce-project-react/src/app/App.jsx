@@ -1,16 +1,16 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useRef } from 'react';
-import Header from './assets/components/Header';
-import Home from './assets/components/pages/Home/Home';
-import CategoryPage from './assets/components/pages/CategoryPage';
-import Detail from './assets/components/pages/Detail';
-import Login from './assets/components/pages/Login';
-import SignIn from './assets/components/pages/SignUp';
-import Search from './assets/components/pages/Search';
-import Profile from './assets/components/pages/Profile';
-import Cart from './assets/components/pages/Cart';
-import { AuthProvider } from './assets/components/contexts/AuthContext';
-import { CartProvider } from './assets/components/contexts/CartContext';
+import Header from '../components/layout/Header';
+import Home from '../pages/Home';
+import CategoryPage from '../pages/CategoryPage';
+import Detail from '../pages/Detail';
+import Login from '../pages/Login';
+import SignIn from '../pages/SignUp';
+import Search from '../pages/Search';
+import Profile from '../pages/Profile';
+import Cart from '../pages/Cart';
+import { AuthProvider } from '../contexts/AuthContext';
+import { CartProvider } from '../contexts/CartContext';
 
 function App() {
   const mainRef = useRef(null);

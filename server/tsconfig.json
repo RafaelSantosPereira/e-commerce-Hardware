@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",                          /* Versão JS moderna para o Node */
+    "module": "NodeNext",                        /* Sistema de módulos moderno */
+    "moduleResolution": "NodeNext",
+    "rootDir": ".",                              /* Raiz do código do servidor */
+    "outDir": "./dist",                          /* Para onde vai o JS compilado final */
+    "esModuleInterop": true,                     /* Compatibilidade com require/import */
+    "forceConsistentCasingInFileNames": true,
+    "strict": false,
+    "noCheck": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts", "server.ts", "db.ts"],
+  "exclude": ["node_modules", "dist"]
+}

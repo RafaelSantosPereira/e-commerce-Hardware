@@ -1,8 +1,8 @@
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { idParaCategoria } from "@/assets/export_files/idParaCategoria";
-import CardItem from '../CardItem';
-import { useScrollRestore } from "../useScrollRestore";
+import { idParaCategoria } from "@/data/idParaCategoria";
+import CardItem from '../components/product/CardItem';
+import { useScrollRestore } from "../hooks/useScrollRestore";
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 // Componente de layout reutilizável

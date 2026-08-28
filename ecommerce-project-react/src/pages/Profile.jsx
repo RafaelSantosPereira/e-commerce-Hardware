@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import OrderCard from "../OrderCard";
-import { useScrollRestore } from "../useScrollRestore";
+import OrderCard from "../components/cart/OrderCard";
+import { useScrollRestore } from "../hooks/useScrollRestore";
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 function Profile({ mainRef }) {

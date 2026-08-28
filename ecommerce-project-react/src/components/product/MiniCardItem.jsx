@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { X } from "lucide-react";
-import { useCart } from "./contexts/CartContext";
+import { useCart } from "../../contexts/CartContext";
 
 export default function MiniCardItem({
   id,
