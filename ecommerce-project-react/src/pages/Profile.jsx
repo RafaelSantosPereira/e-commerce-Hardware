@@ -57,7 +57,7 @@ function Profile({ mainRef }) {
   return (
     <div className="min-h-[100%] flex bg-gray-50 dark:bg-darkBackground text-foreground dark:text-darkForeground p-6">
       {/* SIDEBAR */}
-      <aside className="w-64 max-h-[81vh] p-5 bg-white dark:bg-[#1f1f1f] border rounded-lg shadow mr-6">
+      <aside className="w-64 max-h-[81vh] p-5 bg-white dark:bg-darkSurface border rounded-lg shadow mr-6">
         <h2 className="text-xl font-semibold mb-4">Painel de conta</h2>
         <ul className="space-y-2">
           <li>
@@ -88,7 +88,7 @@ function Profile({ mainRef }) {
       </aside>
 
       {/* CONTEÚDO PRINCIPAL */}
-      <main className="flex-1 bg-white dark:bg-[#1f1f1f] border rounded-lg shadow p-6 transition-opacity duration-150">
+      <main className="flex-1 bg-white dark:bg-darkSurface border rounded-lg shadow p-6 transition-opacity duration-150">
         <h1 className="text-3xl mb-6 font-bold">
           Olá {userName || "Utilizador"}
         </h1>

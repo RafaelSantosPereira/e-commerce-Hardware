@@ -34,10 +34,10 @@ function Detail() {
   if (!data) return <p className="p-6">A carregar produto...</p>;
 
   return (
-    <div className="min-h-screen px-6 py-10 bg-gray-50 dark:bg-[#111] text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen px-6 py-10 bg-gray-50 dark:bg-darkBackground text-gray-900 dark:text-gray-100">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
         {/* Imagem do produto */}
-        <div className="bg-white dark:bg-[#1f1f1f] rounded-xl shadow-md p-6">
+        <div className="bg-white dark:bg-darkSurface rounded-xl shadow-md p-6">
           <img
             src={data.product.image_url}
             alt={data.product.name}
@@ -74,7 +74,7 @@ function Detail() {
 
           {/* Quantidade + botão */}
           <div className="flex items-center gap-4 mt-6">
-            <div className="flex items-center border rounded-lg bg-white dark:bg-[#1f1f1f] border-gray-300 dark:border-gray-600">
+            <div className="flex items-center border rounded-lg bg-white dark:bg-darkSurface border-gray-300 dark:border-gray-600">
               <button
                 onClick={decreaseQty}
                 className="px-3 py-2 text-xl font-bold hover:bg-gray-200 dark:hover:bg-gray-700"

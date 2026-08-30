@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet, useOutletContext } from 'react-router-dom';
 import { useRef } from 'react';
 import Header from '../components/layout/Header';
 import Home from '../pages/Home';
@@ -12,28 +12,53 @@ import Cart from '../pages/Cart';
 import { AuthProvider } from '../contexts/AuthContext';
 import { CartProvider } from '../contexts/CartContext';
 
-function App() {
+// Layout Principal (Com Header e Container com Scroll)
+function MainLayout() {
   const mainRef = useRef(null);
 
+  return (
+    <div className="flex flex-col h-screen">
+      <Header />
+      <main ref={mainRef} className="flex-1 overflow-auto">
+        {/* Passamos o mainRef para as páginas filhas através do contexto do Outlet */}
+        <Outlet context={{ mainRef }} />
+      </main>
+    </div>
+  );
+}
+
+// Layout de Autenticação (Sem Header, limpo e centrado)
+function AuthLayout() {
+  return (
+    <div className="flex flex-col h-screen">
+      <Outlet />
+    </div>
+  );
+}
+
+function App() {
   return (
     <AuthProvider>
       <CartProvider>
         <Router>
-          <div className="flex flex-col h-screen">
-            <Header />
-            <main ref={mainRef} className="flex-1 overflow-auto">
-              <Routes>
-                <Route path="/" element={<Home mainRef={mainRef} />} />
-                <Route path="/carrinho" element={<Cart />} />
-                <Route path="/:categoria" element={<CategoryPage mainRef={mainRef} />} />
-                <Route path="/:categoria/:id" element={<Detail />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/SignUp" element={<SignIn />} />
-                <Route path="/Search" element={<Search mainRef={mainRef} />} />
-                <Route path="/profile" element={<Profile mainRef={mainRef} />} />
-              </Routes>
-            </main>
-          </div>
+          <Routes>
+            {/* Páginas da Loja (Com Header) */}
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/carrinho" element={<Cart />} />
+              <Route path="/:categoria" element={<CategoryPage />} />
+              <Route path="/:categoria/:id" element={<Detail />} />
+              <Route path="/Search" element={<Search />} />
+              <Route path="/profile" element={<Profile />} />
+            </Route>
+
+            {/* Páginas de Autenticação (Sem Header) */}
+            <Route element={<AuthLayout />}>
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignIn />} />
+              <Route path="/SignUp" element={<SignIn />} />
+            </Route>
+          </Routes>
         </Router>
       </CartProvider>
     </AuthProvider>

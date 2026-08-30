@@ -70,7 +70,7 @@ function Cart() {
   return (
     <div className="flex w-full bg-gray-50 dark:bg-background dark. p-6 gap-6 ">
       {/* lista de produtos */}
-      <div className="w-2/3 bg-white dark:bg-[#121212] p-4 rounded-lg shadow mr-6">
+      <div className="w-2/3 bg-white dark:bg-darkBackground p-4 rounded-lg shadow mr-6">
         {cartItems.length === 0 ? (
           <p className="text-gray-500">O carrinho está vazio</p>
         ) : (
@@ -91,7 +91,7 @@ function Cart() {
       </div>
 
       {/* info cart */}
-      <div className="w-1/3 bg-white dark:bg-[#121212] p-4 rounded-lg shadow mr-6">
+      <div className="w-1/3 bg-white dark:bg-darkBackground p-4 rounded-lg shadow mr-6">
         <h2 className="text-2xl font-bold mb-4">Resumo</h2>
         
         <form className="flex flex-col gap-3 p-4 mt-4"

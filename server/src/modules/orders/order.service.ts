@@ -70,7 +70,6 @@ const orderService = {
       GROUP BY o.id
       ORDER BY o.created_at DESC`, [userId]);
 
-    console.log(result.rows)
     return result.rows;
   },
 };

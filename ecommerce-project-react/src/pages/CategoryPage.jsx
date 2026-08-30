@@ -168,7 +168,7 @@ function CategoryPage({ mainRef }) {
     >
       <div className='flex flex-row m-5'>
         <h1 className="text-4xl font-bold capitalize mb-4">{categoria.replace('-', ' ')}</h1>
-        <div className='ml-auto flex bg-white dark:bg-[#1f1f1f] border rounded-lg shadow p-4'>
+        <div className='ml-auto flex bg-white dark:bg-darkSurface border rounded-lg shadow p-4'>
           <Select onValueChange={handleSortChange}>
             <SelectTrigger className="w-[200px] bg-gray-50 dark:text-[#d1d5db] dark:bg-darkBackground">
               <SelectValue placeholder="Ordenar por" />

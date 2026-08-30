@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import CardItem from '../components/product/CardItem';
 import { useScrollRestore } from '../hooks/useScrollRestore';
+import { HeroBanner } from '../components/product/Banner';
 
 function Home({ mainRef }) {
   const [data, setData] = useState([]);
@@ -43,10 +44,11 @@ function Home({ mainRef }) {
 
   return (
     <div
-      className={`min-h-screen bg-background dark:bg-darkBackground text-foreground dark:text-darkForeground p-4 ${
+      className={`min-h-screen border-2 bg-background dark:bg-darkBackground text-foreground dark:text-darkForeground p-4 ${
         isRestoring ? 'opacity-0' : 'opacity-100'
       }`}
     >
+      <HeroBanner />
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {data.map((product, index) => (
           <CardItem

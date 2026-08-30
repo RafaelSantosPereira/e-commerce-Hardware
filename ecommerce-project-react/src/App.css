@@ -1,11 +1,11 @@
 #root {
-  background-color: #F8FAFC;
+  background-color: var(--background);
   width: 100%;
 }
 
 /* modo dark para #root */
 .dark #root {
-  background-color: #121212; /* ou outra cor escura que queiras */
+  background-color: var(--dark-background);
 }
 html, body, #root {
   height: 100%;

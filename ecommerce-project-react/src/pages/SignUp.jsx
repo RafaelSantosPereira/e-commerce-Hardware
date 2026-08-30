@@ -50,11 +50,11 @@ export default function SignIn() {
   };
 
   return (
-  <div className="flex items-center justify-center h-full w-full bg-gray-50 dark:bg-[#121212] px-4">
+  <div className="flex items-center justify-center h-full w-full bg-gray-50 dark:bg-darkBackground px-4">
     <div
       className="
         w-full max-w-md 
-        bg-white dark:bg-[#1f1f1f] 
+        bg-white dark:bg-darkSurface 
         p-6 sm:p-8 
         rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.25)]
         flex flex-col 
@@ -90,7 +90,7 @@ export default function SignIn() {
           required
           value={email}
           onChange={e => setEmail(e.target.value)}
-          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+          className="px-4 py-2 h-12 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-darkBackground dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
           placeholder="Email"
         />
 
@@ -99,7 +99,7 @@ export default function SignIn() {
           required
           value={nome}
           onChange={e => setNome(e.target.value)}
-          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+          className="px-4 py-2 h-12 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-darkBackground dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
           placeholder="Nome"
         />
 
@@ -111,7 +111,7 @@ export default function SignIn() {
             setPassword(e.target.value);
             if (error) setError('');
           }}
-          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+          className="px-4 py-2 h-12 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-darkBackground dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
           placeholder="Password"
         />
 
@@ -123,7 +123,7 @@ export default function SignIn() {
             setConfirmPass(e.target.value);
             if (error) setError('');
           }}
-          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#121212] dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+          className="px-4 py-2 h-12 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-darkBackground dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
           placeholder="Confirmar Password"
         />
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ShoppingCart, User, Sun, Moon, Menu, Search } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import MiniCardItem from '../product/MiniCardItem';
@@ -16,6 +16,7 @@ function Header() {
   const { cartItems, cartLoading, totalItems, totalPrice, clearCart } = useCart();
   const { isLogged, userName, logout } = useAuth();
   const navigate = useNavigate();
+  const userMenuRef = useRef(null);
 
 
  const [darkMode, setDarkMode] = useState(() => {
@@ -31,6 +32,21 @@ function Header() {
       localStorage.setItem('theme', 'light');
     }
   }, [darkMode]); // corre sempre que darkMode muda
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Se o clique for fora do elemento referenciado, fecha o menu
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setUserMenuOpen(false);
+      }
+    };
+    // Ouve os cliques no documento (mousedown é mais responsivo que click)
+    document.addEventListener("mousedown", handleClickOutside);
+    // Limpa o event listener quando o componente for desmontado
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const toggleMode = () => {
     setDarkMode(prev => !prev); 
@@ -49,6 +65,7 @@ function Header() {
     logout();
     setUserMenuOpen(false);
     clearCart();
+    window.location.reload();
   };
 
   const handleSearchSubmit = (e) => {
@@ -68,7 +85,7 @@ function Header() {
 
   return (
     <>
-      <header className="flex items-center px-6 py-4 bg-white dark:bg-[#121212] border-b-2 border-slate-200 dark:border-gray-800 h-24 relative">
+      <header className="flex items-center px-6 py-4 bg-white dark:bg-darkBackground border-b-2 border-slate-200 dark:border-gray-800 h-24 relative">
         <button onClick={toggleSidebar} className="text-accent dark:text-accent">
           <Menu className="w-7 h-7 text-blue-500" />
         </button>
@@ -94,7 +111,7 @@ function Header() {
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Pesquisar componentes..."
             className="w-full pl-10 pr-4 py-2 focus:outline-none text-foreground bg-gray-100 rounded-[10px] h-12
-              dark:bg-[#1f1f1f] dark:text-[#d1d5db] placeholder:text-slate-500"
+              dark:bg-darkSurface dark:text-darkForeground placeholder:text-slate-500"
           />
         </div>
 
@@ -113,14 +130,14 @@ function Header() {
           </button>
 
           {/* Botão de User */}
-          <div className="relative flex items-center">
+          <div className="relative flex items-center" ref={userMenuRef}>
             <button onClick={toggleUserMenu}>
               <User className="w-7 h-7" />
             </button>
 
             {/* Popup de login/conta */}
             {userMenuOpen && (
-              <div className="absolute right-0 top-full mt-2 w-40 bg-white dark:bg-[#1f1f1f] border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+              <div className="absolute right-0 top-full mt-2 w-40 bg-white dark:bg-darkSurface border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
                 {!isLogged ? (
                   <>
                     <Link
@@ -168,7 +185,7 @@ function Header() {
 
       {/* Sidebar Categorias */}
       <aside
-        className={`fixed top-0 left-0 h-full w-80 bg-white dark:bg-[#1f1f1f] shadow-md transition-transform duration-300 z-40 border-0 rounded-tr-lg ${
+        className={`fixed top-0 left-0 h-full w-80 bg-white dark:bg-darkSurface shadow-md transition-transform duration-300 z-40 border-0 rounded-tr-lg ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -205,7 +222,7 @@ function Header() {
 
       {/* Sidebar Carrinho */}
       <aside
-        className={`fixed top-0 right-0 h-full w-96 bg-white dark:bg-[#1f1f1f] shadow-md transition-transform duration-300 z-40 border-0 rounded-tl-lg flex flex-col ${
+        className={`fixed top-0 right-0 h-full w-96 bg-white dark:bg-darkSurface shadow-md transition-transform duration-300 z-40 border-0 rounded-tl-lg flex flex-col ${
           cartOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -246,7 +263,7 @@ function Header() {
 
         {/* Footer fixo */}
         {cartItems.length > 0 && (
-          <div className="border-t dark:border-gray-700 p-4 bg-gray-50 dark:bg-[#161616] shrink-0">
+          <div className="border-t dark:border-gray-700 p-4 bg-gray-50 dark:bg-darkBackground shrink-0">
             <div className="flex justify-between items-center mb-4">
               <span className="text-lg font-semibold dark:text-gray-200">Total:</span>
               <span className="text-xl font-bold text-blue-500">€{totalCartPrice.toFixed(2)}</span>
