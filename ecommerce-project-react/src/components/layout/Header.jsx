@@ -20,7 +20,9 @@ function Header() {
 
 
  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem('theme') === 'dark';
+    const savedTheme = localStorage.getItem('theme');
+    if (!savedTheme) return true;
+    return savedTheme === 'dark';
   });
 
   useEffect(() => {
@@ -31,7 +33,7 @@ function Header() {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
     }
-  }, [darkMode]); // corre sempre que darkMode muda
+  }, [darkMode]); 
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -40,9 +42,7 @@ function Header() {
         setUserMenuOpen(false);
       }
     };
-    // Ouve os cliques no documento (mousedown é mais responsivo que click)
     document.addEventListener("mousedown", handleClickOutside);
-    // Limpa o event listener quando o componente for desmontado
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -55,11 +55,6 @@ function Header() {
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const toggleUserMenu = () => setUserMenuOpen(!userMenuOpen);
   const handleCartToggle = () => setCartOpen(!cartOpen);
-
- 
-
-
-  
 
   const handleLogout = () => {
     logout();
@@ -75,13 +70,8 @@ function Header() {
     }
   };
 
-
-
-
-
   const totalCartItems = totalItems;
   const totalCartPrice = totalPrice;
-
 
   return (
     <>

@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Outlet, useOutletContext } from 'react-router-dom';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import Header from '../components/layout/Header';
 import Home from '../pages/Home';
 import CategoryPage from '../pages/CategoryPage';
@@ -37,6 +37,19 @@ function AuthLayout() {
 }
 
 function App() {
+  
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    
+    if (!savedTheme || savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, []);
+
   return (
     <AuthProvider>
       <CartProvider>

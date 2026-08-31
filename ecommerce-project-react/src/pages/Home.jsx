@@ -1,42 +1,39 @@
+// src/pages/Home.jsx
 import { useState, useEffect } from 'react';
-import CardItem from '../components/product/CardItem';
 import { useScrollRestore } from '../hooks/useScrollRestore';
 import { HeroBanner } from '../components/product/Banner';
+import { banners } from '../data/banners';
+import { ProductCarousel } from '../components/product/ProductCarousel'
 
 function Home({ mainRef }) {
-  const [data, setData] = useState([]);
+  const [gpus, setGpus] = useState([]);
+  const [cpus, setCpus] = useState([]);
+  const [rams, setRams] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const idParaCategoria = {
-    1: 'processadores',
-    2: 'placas-graficas',
-    3: 'motherboards',
-    4: 'memorias-ram',
-    5: 'armazenamento',
-    6: 'fontes-de-alimentacao',
-    7: 'caixas',
-    8: 'coolers',
-  };
 
   useEffect(() => {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-    const limit = 20;
-    const offset = 0;
+    const limit = 10; // Quantidade de itens por carrossel
 
-    fetch(`${apiUrl}/products?limit=${limit}&offset=${offset}`)
-      .then(res => res.json())
-      .then(json => {
-        setData(json);
+    Promise.all([
+      fetch(`${apiUrl}/products/category/id/2?limit=${limit}`).then(res => res.json()), // Placas Gráficas
+      fetch(`${apiUrl}/products/category/id/1?limit=${limit}`).then(res => res.json()), // Processadores
+      fetch(`${apiUrl}/products/category/id/4?limit=${limit}`).then(res => res.json())  // Memórias RAM
+    ])
+      .then(([gpuData, cpuData, ramData]) => {
+        setGpus(gpuData.products || []);
+        setCpus(cpuData.products || []);
+        setRams(ramData.products || []);
         setLoading(false);
       })
       .catch(err => {
-        console.error("Erro ao buscar produtos:", err);
+        console.error("Erro ao buscar produtos para a home:", err);
         setLoading(false);
       });
   }, []);
 
-  // Hook para restaurar posição
-  const isRestoring = useScrollRestore(mainRef, "homeScrollPosition", !loading && data.length > 0);
+  const hasProducts = gpus.length > 0 || cpus.length > 0 || rams.length > 0;
+  const isRestoring = useScrollRestore(mainRef, "homeScrollPosition", !loading && hasProducts);
 
   if (loading) {
     return <p className="text-center mt-8">A carregar produtos...</p>;
@@ -44,19 +41,33 @@ function Home({ mainRef }) {
 
   return (
     <div
-      className={`min-h-screen border-2 bg-background dark:bg-darkBackground text-foreground dark:text-darkForeground p-4 ${
+      className={`min-h-screen w-full border-2 bg-background dark:bg-darkBackground text-foreground dark:text-darkForeground p-4 ${
         isRestoring ? 'opacity-0' : 'opacity-100'
       }`}
     >
-      <HeroBanner />
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {data.map((product, index) => (
-          <CardItem
-            key={product.id || index}
-            {...product}
-            categoria={idParaCategoria[product.category_id]}
-          />
-        ))}
+      <HeroBanner banners={banners} />
+
+      <div className="w-full px-2">
+        
+
+        <ProductCarousel
+          title="Placas Gráficas"
+          products={gpus}
+          categoria="placas-graficas"
+          linkVerMais="/placas-graficas" 
+        />
+        <ProductCarousel
+          title="Processadores"
+          products={cpus}
+          categoria="processadores"
+          linkVerMais="/processadores" 
+        />
+        <ProductCarousel
+          title="Memórias RAM"
+          products={rams}
+          categoria="memorias-ram"
+          linkVerMais="/memorias-ram"
+        />
       </div>
     </div>
   );
